@@ -295,40 +295,61 @@ EOF
     # マウス操作を有効化
     tmux set-option -t "$DASHBOARD_SESSION" mouse on
     
-    # 各エージェント専用ウィンドウを作成（15個）
-    
-    # Boss window
-    tmux new-window -t "$DASHBOARD_SESSION" -n "boss-1"
-    tmux send-keys -t "$DASHBOARD_SESSION:boss-1" "clear && echo '🎯 BOSS - プロジェクト管理者' && cd $AGENTS_DIR/boss" Enter
-    tmux send-keys -t "$DASHBOARD_SESSION:boss-1" "export AGENT_TYPE=boss AGENT_NUMBER=1 WORKSPACE_DIR='$WORKSPACE_DIR'" Enter
-    tmux send-keys -t "$DASHBOARD_SESSION:boss-1" "claude --dangerously-skip-permissions" Enter
-    
-    # Engineer windows (10個)
-    for i in {1..10}; do
-        tmux new-window -t "$DASHBOARD_SESSION" -n "eng-$i"
-        tmux send-keys -t "$DASHBOARD_SESSION:eng-$i" "clear && echo '⚡ ENGINEER-$i - フルスタック開発' && cd $AGENTS_DIR/engineer" Enter
-        tmux send-keys -t "$DASHBOARD_SESSION:eng-$i" "export AGENT_TYPE=engineer AGENT_NUMBER=$i WORKSPACE_DIR='$WORKSPACE_DIR'" Enter
-        tmux send-keys -t "$DASHBOARD_SESSION:eng-$i" "claude --dangerously-skip-permissions" Enter
-    done
-    
-    # Designer windows (2個)
-    for i in {1..2}; do
-        tmux new-window -t "$DASHBOARD_SESSION" -n "des-$i"
-        tmux send-keys -t "$DASHBOARD_SESSION:des-$i" "clear && echo '🎨 DESIGNER-$i - UI/UX設計' && cd $AGENTS_DIR/designer" Enter
-        tmux send-keys -t "$DASHBOARD_SESSION:des-$i" "export AGENT_TYPE=designer AGENT_NUMBER=$i WORKSPACE_DIR='$WORKSPACE_DIR'" Enter
-        tmux send-keys -t "$DASHBOARD_SESSION:des-$i" "claude --dangerously-skip-permissions" Enter
-    done
-    
-    # Marketer windows (2個)
-    for i in {1..2}; do
-        tmux new-window -t "$DASHBOARD_SESSION" -n "mar-$i"
-        tmux send-keys -t "$DASHBOARD_SESSION:mar-$i" "clear && echo '📈 MARKETER-$i - コンテンツ作成' && cd $AGENTS_DIR/marketer" Enter
-        tmux send-keys -t "$DASHBOARD_SESSION:mar-$i" "export AGENT_TYPE=marketer AGENT_NUMBER=$i WORKSPACE_DIR='$WORKSPACE_DIR'" Enter
-        tmux send-keys -t "$DASHBOARD_SESSION:mar-$i" "claude --dangerously-skip-permissions" Enter
-    done
-    
-    # Overview windowを最初に戻す
+    # Overview windowで15ペイン作成（実際のターミナルサイズ545x147で実行）
     tmux select-window -t "$DASHBOARD_SESSION:overview"
+    
+    # 15ペインを慎重に作成（3x5グリッド）
+    # まず縦に5行作成
+    tmux split-window -t "$DASHBOARD_SESSION:overview" -v -p 80  # ペイン1
+    tmux split-window -t "$DASHBOARD_SESSION:overview" -v -p 75  # ペイン2  
+    tmux split-window -t "$DASHBOARD_SESSION:overview" -v -p 67  # ペイン3
+    tmux split-window -t "$DASHBOARD_SESSION:overview" -v -p 50  # ペイン4
+    
+    # 各行を横に3分割
+    # 1行目（ペイン0）
+    tmux split-window -t "$DASHBOARD_SESSION:overview.0" -h -p 67  # ペイン5
+    tmux split-window -t "$DASHBOARD_SESSION:overview.5" -h -p 50  # ペイン6
+    
+    # 2行目（ペイン1）  
+    tmux split-window -t "$DASHBOARD_SESSION:overview.1" -h -p 67  # ペイン7
+    tmux split-window -t "$DASHBOARD_SESSION:overview.7" -h -p 50  # ペイン8
+    
+    # 3行目（ペイン2）
+    tmux split-window -t "$DASHBOARD_SESSION:overview.2" -h -p 67  # ペイン9
+    tmux split-window -t "$DASHBOARD_SESSION:overview.9" -h -p 50  # ペイン10
+    
+    # 4行目（ペイン3）
+    tmux split-window -t "$DASHBOARD_SESSION:overview.3" -h -p 67  # ペイン11  
+    tmux split-window -t "$DASHBOARD_SESSION:overview.11" -h -p 50 # ペイン12
+    
+    # 5行目（ペイン4）
+    tmux split-window -t "$DASHBOARD_SESSION:overview.4" -h -p 67  # ペイン13
+    tmux split-window -t "$DASHBOARD_SESSION:overview.13" -h -p 50 # ペイン14
+    
+    # 全15エージェントを各ペインに配置
+    declare -a agents=(
+        "boss:1:🎯:ボス"
+        "engineer:1:⚡:エンジニア1" "engineer:2:⚡:エンジニア2" "engineer:3:⚡:エンジニア3"
+        "engineer:4:⚡:エンジニア4" "engineer:5:⚡:エンジニア5" "engineer:6:⚡:エンジニア6"
+        "engineer:7:⚡:エンジニア7" "engineer:8:⚡:エンジニア8" "engineer:9:⚡:エンジニア9"
+        "engineer:10:⚡:エンジニア10"
+        "designer:1:🎨:デザイナー1" "designer:2:🎨:デザイナー2"
+        "marketer:1:📈:マーケター1" "marketer:2:📈:マーケター2"
+    )
+    
+    for i in "${!agents[@]}"; do
+        if [ $i -lt 15 ]; then
+            IFS=':' read -r agent_type agent_num icon title <<< "${agents[$i]}"
+            
+            tmux send-keys -t "$DASHBOARD_SESSION:overview.$i" "clear" Enter
+            tmux send-keys -t "$DASHBOARD_SESSION:overview.$i" "echo '┌─────────────┐'" Enter
+            tmux send-keys -t "$DASHBOARD_SESSION:overview.$i" "echo '│ $icon $title │'" Enter  
+            tmux send-keys -t "$DASHBOARD_SESSION:overview.$i" "echo '└─────────────┘'" Enter
+            tmux send-keys -t "$DASHBOARD_SESSION:overview.$i" "cd $AGENTS_DIR/$agent_type" Enter
+            tmux send-keys -t "$DASHBOARD_SESSION:overview.$i" "export AGENT_TYPE=$agent_type AGENT_NUMBER=$agent_num WORKSPACE_DIR='$WORKSPACE_DIR'" Enter
+            tmux send-keys -t "$DASHBOARD_SESSION:overview.$i" "claude --dangerously-skip-permissions" Enter
+        fi
+    done
     
     
     print_success "ダッシュボードの作成が完了しました！"
@@ -339,21 +360,30 @@ EOF
     echo -e "${CYAN}ダッシュボードに接続するには:${NC}"
     echo -e "${WHITE}  tmux attach -t $DASHBOARD_SESSION${NC}"
     echo ""
-    echo -e "${CYAN}ウィンドウ構成（全19ウィンドウ）:${NC}"
-    echo -e "${WHITE}  0: overview   - ステータス監視${NC}"
+    echo -e "${CYAN}ウィンドウ構成:${NC}"
+    echo -e "${WHITE}  0: overview   - 🔥 全15エージェント同時表示 (5行3列グリッド)${NC}"
     echo -e "${WHITE}  1: logs      - ログ監視${NC}"
     echo -e "${WHITE}  2: tasks     - タスク管理${NC}"
     echo -e "${WHITE}  3: engineers - Engineer専用 (4分割)${NC}"
     echo -e "${WHITE}  4: control   - エージェント制御${NC}"
-    echo -e "${WHITE}  5: boss-1    - 🎯 Boss (プロジェクト管理)${NC}"
-    echo -e "${WHITE}  6-15: eng-1~10 - ⚡ Engineer 1-10 (開発)${NC}"
-    echo -e "${WHITE}  16-17: des-1~2 - 🎨 Designer 1-2 (UI/UX)${NC}"
-    echo -e "${WHITE}  18-19: mar-1~2 - 📈 Marketer 1-2 (コンテンツ)${NC}"
+    echo ""
+    echo -e "${CYAN}15ペイン完全表示システム (overview画面):${NC}"
+    echo -e "${WHITE}  ┌─────────────┬─────────────┬─────────────┐${NC}"
+    echo -e "${WHITE}  │ 🎯 Boss     │ ⚡ Engineer-1│ ⚡ Engineer-2│ 1行目${NC}"
+    echo -e "${WHITE}  ├─────────────┼─────────────┼─────────────┤${NC}"
+    echo -e "${WHITE}  │ ⚡ Engineer-3│ ⚡ Engineer-4│ ⚡ Engineer-5│ 2行目${NC}"
+    echo -e "${WHITE}  ├─────────────┼─────────────┼─────────────┤${NC}"
+    echo -e "${WHITE}  │ ⚡ Engineer-6│ ⚡ Engineer-7│ ⚡ Engineer-8│ 3行目${NC}"
+    echo -e "${WHITE}  ├─────────────┼─────────────┼─────────────┤${NC}"
+    echo -e "${WHITE}  │ ⚡ Engineer-9│ ⚡ Engineer-10│ 🎨 Designer-1│ 4行目${NC}"
+    echo -e "${WHITE}  ├─────────────┼─────────────┼─────────────┤${NC}"
+    echo -e "${WHITE}  │ 🎨 Designer-2│ 📈 Marketer-1│ 📈 Marketer-2│ 5行目${NC}"
+    echo -e "${WHITE}  └─────────────┴─────────────┴─────────────┘${NC}"
     echo ""
     echo -e "${CYAN}15エージェント完全表示システム:${NC}"
-    echo -e "${WHITE}  • 各エージェント専用ウィンドウ（Claude Code自動起動）${NC}"
-    echo -e "${WHITE}  • Ctrl+B, 5-19でエージェント直接切り替え${NC}"
-    echo -e "${WHITE}  • マウスクリックでウィンドウ選択可能${NC}"
+    echo -e "${WHITE}  • 全エージェント同時表示（Claude Code自動起動）${NC}"
+    echo -e "${WHITE}  • マウスクリックでペイン切り替え可能${NC}"
+    echo -e "${WHITE}  • Ctrl+B, 矢印キーでペイン間移動${NC}"
     echo -e "${WHITE}  🎯 Boss${NC}"
     echo -e "${WHITE}  ⚡ Engineer 1-10${NC}"
     echo -e "${WHITE}  🎨 Designer 1-2${NC}"
