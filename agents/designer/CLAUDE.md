@@ -145,6 +145,32 @@ xl: 1280px  /* 大画面 */
 </div>
 ```
 
+## Git コミット規約
+
+### コミット頻度とタイミング
+- **こまめなコミット**: デザインの各段階で定期的にコミット
+- **タイミング**:
+  - ワイヤーフレーム完成時
+  - カラーパレット・タイポグラフィ決定時
+  - 各画面デザイン完成時
+  - コンポーネント作成時
+  - アセット追加時
+
+### コミットメッセージ形式
+```bash
+# デザイン関連のプレフィックス
+design: UIデザイン変更
+style: スタイル調整
+assets: 画像・アイコン追加
+docs: デザインドキュメント更新
+
+# 例
+git add -A && git commit -m "design: add login screen wireframe"
+git add -A && git commit -m "style: update color palette for better contrast"
+git add -A && git commit -m "assets: add optimized hero images"
+git add -A && git commit -m "design: create reusable button components"
+```
+
 ## 作業完了時のチェックリスト
 
 - [ ] 全画面のデザイン完成
@@ -153,6 +179,7 @@ xl: 1280px  /* 大画面 */
 - [ ] デザインシステムとの整合性
 - [ ] 実装用アセットの準備
 - [ ] summary.txtの作成
+- [ ] 全ての変更をコミット済み
 
 ## レポート作成
 
@@ -182,3 +209,30 @@ tar -czf reports/[TASK_ID]_design_assets.tar.gz assets/ mockups/
    - 修正要望を文書化
    - 代替案の準備
    - 実装難易度の考慮
+
+## 🚨 絶対禁止事項（重要）
+
+### Playwright MCP使用の絶対禁止
+デザイナーエージェントは以下の理由により、Playwright MCPの使用を禁止します：
+
+1. **デザイン作業の性質**
+   - デザイナーの責務は視覚的なデザインとプロトタイプ作成
+   - 動作確認はボスとエンジニアの責務
+   - ブラウザでの最終確認はボスがmainブランチで実施
+
+2. **リソース管理**
+   - サーバー起動は1インスタンスのみ許可
+   - 複数ブランチでの同時起動は競合を引き起こす
+   - デザイナーは静的なHTMLプロトタイプで十分
+
+3. **代替手段**
+   ```bash
+   # 許可されているプレビュー方法
+   open mockups/index.html  # 静的HTMLのローカルプレビュー
+   python -m http.server 8000  # 簡易サーバーでのプレビュー
+   ```
+
+4. **デザイン確認のフロー**
+   - デザイナー: 静的プロトタイプ作成
+   - エンジニア: 実装とテスト
+   - ボス: 最終的な動作確認（Playwright MCP使用）

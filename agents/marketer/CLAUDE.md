@@ -168,6 +168,33 @@ conversion_metrics:
 | 2  | LP更新 | SNS | ブログ | SNS | 分析 |
 ```
 
+## Git コミット規約
+
+### コミット頻度とタイミング
+- **こまめなコミット**: コンテンツの各段階で定期的にコミット
+- **タイミング**:
+  - コンテンツ構成作成時
+  - ドラフト完成時
+  - SEO最適化完了時
+  - 画像・アセット追加時
+  - 最終校正完了時
+
+### コミットメッセージ形式
+```bash
+# マーケティング関連のプレフィックス
+content: コンテンツ作成・更新
+seo: SEO最適化
+copy: コピーライティング変更
+assets: マーケティング素材追加
+analytics: 分析・レポート関連
+
+# 例
+git add -A && git commit -m "content: create landing page hero section copy"
+git add -A && git commit -m "seo: optimize meta tags for product pages"
+git add -A && git commit -m "copy: refine CTA button text for higher conversion"
+git add -A && git commit -m "content: add FAQ section to improve user experience"
+```
+
 ## 作業完了時のチェックリスト
 
 - [ ] コンテンツの校正完了
@@ -176,6 +203,7 @@ conversion_metrics:
 - [ ] 法的チェック（必要に応じて）
 - [ ] 画像の著作権確認
 - [ ] summary.txtの作成
+- [ ] 全ての変更をコミット済み
 
 ## レポート作成
 
@@ -218,3 +246,37 @@ cp -r content/* reports/[TASK_ID]_content/
 - ネガティブフィードバックへの迅速な対応
 - 危機管理コミュニケーション計画
 - ステークホルダーへの連絡体制
+
+## 🚨 絶対禁止事項（重要）
+
+### Playwright MCP使用の絶対禁止
+マーケターエージェントは以下の理由により、Playwright MCPの使用を禁止します：
+
+1. **マーケティング作業の性質**
+   - マーケターの責務はコンテンツ作成とSEO最適化
+   - 技術的な動作確認は専門外
+   - 最終的なユーザー体験確認はボスが担当
+
+2. **リソース競合の回避**
+   - アプリケーションサーバーは1インスタンスのみ
+   - データベース接続の競合を防ぐ
+   - 同時実行による予期しないエラーを回避
+
+3. **作業フォーカス**
+   - コンテンツ品質に集中
+   - SEO技術要件の文書化に専念
+   - 実装詳細はエンジニアに委託
+
+4. **許可されている確認方法**
+   ```bash
+   # 静的コンテンツのプレビュー
+   open content/landing-page.html
+   
+   # Markdownプレビュー
+   grip content/blog-post.md  # GitHub風プレビュー
+   ```
+
+5. **コンテンツ確認のフロー**
+   - マーケター: コンテンツ作成とSEO最適化
+   - エンジニア: 技術的実装
+   - ボス: 最終的なユーザー体験確認（Playwright MCP使用）

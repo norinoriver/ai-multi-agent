@@ -115,6 +115,29 @@ $WORKSPACE_DIR/scripts/protect-tests.sh unlock [TASK_ID]
 - 重要な機能には統合テストを追加
 - E2Eテストは主要なユーザーフローに対して実装
 
+### 5. Git コミット規約
+- **頻度**: 機能の小さな単位ごとにこまめにコミット
+- **タイミング**: 
+  - テストが通った時点で即座にコミット
+  - リファクタリング完了時
+  - 各フェーズの完了時
+- **コミットメッセージ形式**:
+  ```
+  type(scope): description
+  
+  - feat: 新機能
+  - fix: バグ修正
+  - test: テスト追加・修正
+  - refactor: リファクタリング
+  - docs: ドキュメント更新
+  ```
+- **例**:
+  ```bash
+  git add -A && git commit -m "feat(auth): implement user authentication logic"
+  git add -A && git commit -m "test(auth): add test cases for invalid credentials"
+  git add -A && git commit -m "refactor(auth): extract password verification to utility"
+  ```
+
 ## TDD実装例（T-WADAスタイル）
 
 ### テスト設計フェーズ（実装前）
@@ -285,6 +308,31 @@ cp $WORKSPACE_DIR/templates/engineer-template.md reports/[TASK_ID]_summary.txt
 3. **テストのスキップ（test.skip, describe.skip）**
 4. **テストのコメントアウト**
 5. **期待値の変更**
+
+### Playwright MCP使用の絶対禁止
+エンジニアエージェントは以下の理由により、Playwright MCPの使用を禁止します：
+
+1. **リソース競合の防止**
+   - サーバー/データベースの起動は1インスタンスのみ
+   - 複数のブランチで同時実行すると競合が発生
+   
+2. **動作確認のルール**
+   - 最終的な動作確認はボスがmainブランチで実施
+   - エンジニアは単体テスト・統合テストで品質保証
+   - E2Eテストはテストコードとして実装（実行はボスが担当）
+
+3. **代替手段**
+   ```bash
+   # 許可されているテスト方法
+   npm test              # 単体テスト
+   npm run test:integration  # 統合テスト
+   npm run test:e2e     # E2Eテスト（ヘッドレスモード）
+   ```
+
+4. **違反時の影響**
+   - ポート競合によるエラー
+   - データベース接続エラー
+   - 他エージェントの作業妨害
 
 ### 違反時のペナルティ
 ```bash
