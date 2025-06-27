@@ -124,6 +124,12 @@ main() {
     echo ""
     echo "セッションに接続するには:"
     echo "  tmux attach -t <session_name>"
+    echo ""
+    echo "ダッシュボードを起動するには:"
+    echo "  $WORKSPACE_DIR/scripts/agent-dashboard.sh"
+    echo ""
+    echo "エージェントを停止するには:"
+    echo "  $WORKSPACE_DIR/scripts/stop-agents.sh"
 }
 
 # スクリプトの実行
