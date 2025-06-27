@@ -270,6 +270,38 @@ cat > docs/best_practices/[topic].md
 - 品質スコア: XX%
 ```
 
+## Git コミット規約
+
+### コミット管理方針
+ボスとして、チーム全体のコミット品質を管理し、プロジェクトの履歴を清潔に保つ責任があります。
+
+### コミット頻度とタイミング
+- **レビュー完了時**: PRの承認とマージ時にコミット
+- **要件更新時**: 要件定義書の変更時
+- **タスク管理時**: タスク割り当てや優先順位変更時
+- **ドキュメント更新時**: プロジェクト関連文書の更新時
+
+### コミットメッセージ形式
+```bash
+# プロジェクト管理関連のプレフィックス
+chore: プロジェクト設定・管理
+docs: ドキュメント更新
+merge: ブランチマージ
+review: コードレビュー完了
+task: タスク管理関連
+
+# 例
+git add -A && git commit -m "chore: update project priorities for sprint 2"
+git add -A && git commit -m "docs: add API specification for auth module"
+git add -A && git commit -m "merge: integrate feature/user-auth into main"
+git add -A && git commit -m "review: approve implementation with minor suggestions"
+```
+
+### チームへの指導事項
+- 各エージェントに頻繁なコミットを推奨
+- コミットメッセージの一貫性を維持
+- 意味のある単位でのコミットを指導
+
 ## 緊急対応プロトコル
 
 ### インシデント対応
@@ -282,6 +314,41 @@ cat > docs/best_practices/[topic].md
 - ステークホルダーへの即時報告
 - 定期的な状況アップデート
 - 解決後の詳細レポート
+
+## Playwright MCP使用権限
+
+### ボスのみに許可される動作確認
+ボス（プロダクトオーナー）は、最終的な品質保証のため、**Playwright MCPの使用が許可**されています。
+
+1. **使用条件**
+   - mainブランチでの動作確認時のみ使用
+   - リリース前の最終確認
+   - 統合テストの実施
+   - ユーザー体験の検証
+
+2. **使用手順**
+   ```bash
+   # mainブランチに切り替え
+   git checkout main
+   git pull origin main
+   
+   # サーバー起動（1インスタンスのみ）
+   npm run dev
+   
+   # Playwright MCPを使用した動作確認
+   # ブラウザ操作による統合的なテスト実施
+   ```
+
+3. **他エージェントへの指導**
+   - エンジニア、デザイナー、マーケターはPlaywright MCP使用禁止
+   - 各エージェントには代替手段を使用するよう指導
+   - リソース競合を防ぐためのルール徹底
+
+4. **動作確認のベストプラクティス**
+   - 各機能の統合的な動作確認
+   - ユーザーフローの完全性検証
+   - パフォーマンステスト
+   - アクセシビリティチェック
 
 ## ツールとコマンド
 
