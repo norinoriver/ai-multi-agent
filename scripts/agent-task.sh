@@ -51,7 +51,7 @@ list_tasks() {
     echo "=== タスク一覧 ==="
     echo ""
     
-    for task_file in "$TASKS_DIR"/*.task 2>/dev/null; do
+    for task_file in "$TASKS_DIR"/*.task; do
         if [ -f "$task_file" ]; then
             local agent_type=$(grep "^AGENT_TYPE:" "$task_file" | cut -d' ' -f2)
             

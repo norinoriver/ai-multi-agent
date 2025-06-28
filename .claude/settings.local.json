@@ -12,7 +12,11 @@
       "Bash(tmux list-sessions:*)",
       "Bash(tmux send-keys:*)",
       "Bash(tmux capture-pane:*)",
-      "Bash(tmux kill-session:*)"
+      "Bash(tmux kill-session:*)",
+      "Bash(./scripts/stop-agents.sh:*)",
+      "Bash(./scripts/ai-multi-agent.sh:*)",
+      "Bash(./scripts/boss-command.sh:*)",
+      "Bash(./scripts/agent-task.sh:*)"
     ],
     "deny": []
   }

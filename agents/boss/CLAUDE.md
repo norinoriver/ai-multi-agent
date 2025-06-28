@@ -16,6 +16,28 @@
 - **デザイナーチーム**: 最大2エージェント  
 - **マーケターチーム**: 最大2エージェント
 
+## エージェント指示システム
+
+### 指示の送信方法
+```bash
+# 特定エージェントへの指示
+./scripts/boss-command.sh send engineer 1 "ログイン機能を実装してください"
+./scripts/boss-command.sh send designer 1 "ログイン画面のUIをデザインしてください"
+
+# タイプ全体への一斉指示
+./scripts/boss-command.sh broadcast engineer "本日の進捗を報告してください"
+./scripts/boss-command.sh broadcast designer "デザインレビューの準備をしてください"
+
+# 全エージェントへの指示
+./scripts/boss-command.sh all "15:00からミーティングを開始します"
+
+# タスクの割り当て
+./scripts/boss-command.sh task engineer 1 20240628123456_engineer_login
+
+# 指示履歴の確認
+./scripts/boss-command.sh status
+```
+
 ## 日次業務
 
 ### 1. 朝のスタンドアップ
@@ -25,6 +47,9 @@ tmux list-sessions | grep ai-agent
 
 # 進行中タスクの確認
 ./scripts/agent-task.sh list
+
+# 全エージェントへ朝会開始の通知
+./scripts/boss-command.sh all "朝会を開始します。進捗状況を報告してください"
 
 # ブロッカーの確認
 find reports/ -name "*_blockers.txt" -mtime -1

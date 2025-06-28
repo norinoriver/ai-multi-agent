@@ -1,0 +1,9 @@
+TASK_ID: 20250628182106_engineer_login_feature
+AGENT_TYPE: engineer
+TASK_NAME: login-feature
+DESCRIPTION: ユーザーログイン機能の実装
+STATUS: pending
+CREATED_AT: 2025-06-28 18:21:06
+BRANCH: feat/login-feature
+ASSIGNED_TO: engineer-1
+ASSIGNED_AT: 2025-06-28 18:21:11
