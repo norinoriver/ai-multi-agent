@@ -43,6 +43,15 @@ show_usage() {
     echo "  $0 dashboard          # ダッシュボードのみ停止"
 }
 
+# エージェントタイプの検証関数
+is_valid_agent_type() {
+    local type=$1
+    for valid_type in "${AGENT_TYPES[@]}"; do
+        [[ "$type" == "$valid_type" ]] && return 0
+    done
+    return 1
+}
+
 # エージェントセッションを停止
 stop_session() {
     local session_name=$1
@@ -98,15 +107,7 @@ main() {
             local agent_type=$arg
             
             # agent_typeの検証
-            local valid_type=false
-            for valid_agent in "${AGENT_TYPES[@]}"; do
-                if [[ "$agent_type" == "$valid_agent" ]]; then
-                    valid_type=true
-                    break
-                fi
-            done
-            
-            if [[ "$valid_type" != "true" ]]; then
+            if ! is_valid_agent_type "$agent_type"; then
                 echo -e "${RED}エラー: 無効なエージェントタイプ '$agent_type'${NC}"
                 show_usage
                 exit 1
@@ -138,15 +139,7 @@ main() {
         local session_name="ai-agent-${agent_type}-${agent_id}"
         
         # agent_typeの検証
-        local valid_type=false
-        for valid_agent in "${AGENT_TYPES[@]}"; do
-            if [[ "$agent_type" == "$valid_agent" ]]; then
-                valid_type=true
-                break
-            fi
-        done
-        
-        if [[ "$valid_type" != "true" ]]; then
+        if ! is_valid_agent_type "$agent_type"; then
             echo -e "${RED}エラー: 無効なエージェントタイプ '$agent_type'${NC}"
             show_usage
             exit 1

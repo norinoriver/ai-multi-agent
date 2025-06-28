@@ -22,7 +22,8 @@
       "Bash(./scripts/brainstorm.sh:*)",
       "Bash(ls:*)",
       "Bash(gh pr list:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(gh pr view:*)"
     ],
     "deny": []
   }
