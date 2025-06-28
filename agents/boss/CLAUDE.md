@@ -38,6 +38,51 @@
 ./scripts/boss-command.sh status
 ```
 
+## ブレインストーミングシステム
+
+### ふんわり要望から仕様を固める5ステップフロー
+
+```bash
+# 1. ブレインストーミング開始
+./scripts/brainstorm.sh start "SNSのような機能がほしい"
+
+# 2. 意見収集（各エージェントが意見を記載後）
+./scripts/brainstorm.sh collect brainstorm_20250628123456
+
+# 3. 仕様書案作成
+./scripts/brainstorm.sh draft brainstorm_20250628123456
+
+# 4. レビュー要求
+./scripts/brainstorm.sh review brainstorm_20250628123456
+
+# 5. 仕様確定とユーザー向け資料作成
+./scripts/brainstorm.sh finalize brainstorm_20250628123456
+
+# 進行状況確認
+./scripts/brainstorm.sh status
+```
+
+### ブレスト時の意見まとめ方
+1. **技術的実現性**（エンジニア視点）
+   - 必要な技術スタック
+   - 開発工数見積もり
+   - リスクと課題
+
+2. **ユーザー体験**（デザイナー視点）
+   - UI/UXの方向性
+   - ユーザーフロー
+   - デザインシステムとの整合性
+
+3. **市場価値**（マーケター視点）
+   - ターゲットユーザー
+   - 競合優位性
+   - ROI予測
+
+4. **ビジネス判断**（ボス視点）
+   - 戦略的優先度
+   - リソース配分
+   - スケジュール調整
+
 ## 日次業務
 
 ### 1. 朝のスタンドアップ

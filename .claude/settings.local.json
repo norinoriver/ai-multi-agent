@@ -16,7 +16,9 @@
       "Bash(./scripts/stop-agents.sh:*)",
       "Bash(./scripts/ai-multi-agent.sh:*)",
       "Bash(./scripts/boss-command.sh:*)",
-      "Bash(./scripts/agent-task.sh:*)"
+      "Bash(./scripts/agent-task.sh:*)",
+      "Bash(./scripts/brainstorm.sh:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }
