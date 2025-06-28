@@ -16,6 +16,73 @@
 - **デザイナーチーム**: 最大2エージェント  
 - **マーケターチーム**: 最大2エージェント
 
+## エージェント指示システム
+
+### 指示の送信方法
+```bash
+# 特定エージェントへの指示
+./scripts/boss-command.sh send engineer 1 "ログイン機能を実装してください"
+./scripts/boss-command.sh send designer 1 "ログイン画面のUIをデザインしてください"
+
+# タイプ全体への一斉指示
+./scripts/boss-command.sh broadcast engineer "本日の進捗を報告してください"
+./scripts/boss-command.sh broadcast designer "デザインレビューの準備をしてください"
+
+# 全エージェントへの指示
+./scripts/boss-command.sh all "15:00からミーティングを開始します"
+
+# タスクの割り当て
+./scripts/boss-command.sh task engineer 1 20240628123456_engineer_login
+
+# 指示履歴の確認
+./scripts/boss-command.sh status
+```
+
+## ブレインストーミングシステム
+
+### ふんわり要望から仕様を固める5ステップフロー
+
+```bash
+# 1. ブレインストーミング開始
+./scripts/brainstorm.sh start "SNSのような機能がほしい"
+
+# 2. 意見収集（各エージェントが意見を記載後）
+./scripts/brainstorm.sh collect brainstorm_20250628123456
+
+# 3. 仕様書案作成
+./scripts/brainstorm.sh draft brainstorm_20250628123456
+
+# 4. レビュー要求
+./scripts/brainstorm.sh review brainstorm_20250628123456
+
+# 5. 仕様確定とユーザー向け資料作成
+./scripts/brainstorm.sh finalize brainstorm_20250628123456
+
+# 進行状況確認
+./scripts/brainstorm.sh status
+```
+
+### ブレスト時の意見まとめ方
+1. **技術的実現性**（エンジニア視点）
+   - 必要な技術スタック
+   - 開発工数見積もり
+   - リスクと課題
+
+2. **ユーザー体験**（デザイナー視点）
+   - UI/UXの方向性
+   - ユーザーフロー
+   - デザインシステムとの整合性
+
+3. **市場価値**（マーケター視点）
+   - ターゲットユーザー
+   - 競合優位性
+   - ROI予測
+
+4. **ビジネス判断**（ボス視点）
+   - 戦略的優先度
+   - リソース配分
+   - スケジュール調整
+
 ## 日次業務
 
 ### 1. 朝のスタンドアップ
@@ -25,6 +92,9 @@ tmux list-sessions | grep ai-agent
 
 # 進行中タスクの確認
 ./scripts/agent-task.sh list
+
+# 全エージェントへ朝会開始の通知
+./scripts/boss-command.sh all "朝会を開始します。進捗状況を報告してください"
 
 # ブロッカーの確認
 find reports/ -name "*_blockers.txt" -mtime -1

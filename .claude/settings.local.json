@@ -7,7 +7,23 @@
       "Bash(chmod:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(rm:brainstorm/tmp/*)",
+      "Bash(rm:commands/tmp/*)",
+      "Bash(rm:/tmp/show-agent-status-temp.sh)",
+      "Bash(tmux list-sessions:*)",
+      "Bash(tmux send-keys:*)",
+      "Bash(tmux capture-pane:*)",
+      "Bash(tmux kill-session:ai-agent-*)",
+      "Bash(./scripts/stop-agents.sh:*)",
+      "Bash(./scripts/ai-multi-agent.sh:*)",
+      "Bash(./scripts/boss-command.sh:*)",
+      "Bash(./scripts/agent-task.sh:*)",
+      "Bash(./scripts/brainstorm.sh:*)",
+      "Bash(ls:*)",
+      "Bash(gh pr list:*)",
+      "Bash(curl:*)",
+      "Bash(gh pr view:*)"
     ],
     "deny": []
   }
