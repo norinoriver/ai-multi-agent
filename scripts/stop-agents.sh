@@ -98,7 +98,15 @@ main() {
             local agent_type=$arg
             
             # agent_typeの検証
-            if [[ ! " ${AGENT_TYPES[@]} " =~ " $agent_type " ]]; then
+            local valid_type=false
+            for valid_agent in "${AGENT_TYPES[@]}"; do
+                if [[ "$agent_type" == "$valid_agent" ]]; then
+                    valid_type=true
+                    break
+                fi
+            done
+            
+            if [[ "$valid_type" != "true" ]]; then
                 echo -e "${RED}エラー: 無効なエージェントタイプ '$agent_type'${NC}"
                 show_usage
                 exit 1
@@ -130,7 +138,15 @@ main() {
         local session_name="ai-agent-${agent_type}-${agent_id}"
         
         # agent_typeの検証
-        if [[ ! " ${AGENT_TYPES[@]} " =~ " $agent_type " ]]; then
+        local valid_type=false
+        for valid_agent in "${AGENT_TYPES[@]}"; do
+            if [[ "$agent_type" == "$valid_agent" ]]; then
+                valid_type=true
+                break
+            fi
+        done
+        
+        if [[ "$valid_type" != "true" ]]; then
             echo -e "${RED}エラー: 無効なエージェントタイプ '$agent_type'${NC}"
             show_usage
             exit 1

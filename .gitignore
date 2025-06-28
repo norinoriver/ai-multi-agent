@@ -1,0 +1,31 @@
+# Backup files
+*.bak
+*.backup
+*.tmp
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Temporary MCP files
+/tmp/show-agent-status-temp.sh
+
+# Temporary brainstorm files
+brainstorm/tmp/
+commands/tmp/
+
+# Node modules if any
+node_modules/

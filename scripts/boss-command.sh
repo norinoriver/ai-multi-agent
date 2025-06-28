@@ -49,18 +49,20 @@ show_usage() {
 
 # 指示の記録
 record_command() {
-    local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+    local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     local agent_type=$1
     local agent_id=$2
     local command=$3
-    local command_file="$COMMANDS_DIR/$(date +%Y%m%d%H%M%S)_${agent_type}_${agent_id}.cmd"
+    local command_file="$COMMANDS_DIR/$(date +%Y%m%d%H%M%S)_${agent_type}_${agent_id}.yaml"
     
     cat > "$command_file" << EOF
-TIMESTAMP: $timestamp
-FROM: Boss
-TO: ${agent_type}-${agent_id}
-COMMAND: $command
-STATUS: sent
+---
+timestamp: $timestamp
+from: Boss
+to: ${agent_type}-${agent_id}
+command: "$command"
+status: sent
+session_id: $(tmux display-message -p '#{session_id}' 2>/dev/null || echo 'unknown')
 EOF
     
     echo "$command_file"
