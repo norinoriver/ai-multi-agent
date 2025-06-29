@@ -23,9 +23,10 @@ logs/
 # Temporary MCP files
 /tmp/show-agent-status-temp.sh
 
-# Temporary brainstorm files
-brainstorm/tmp/
-commands/tmp/
+# AI Multi-Agent generated files
+agent_instructions/
+brainstorm/
+commands/
 
 # Node modules if any
 node_modules/
