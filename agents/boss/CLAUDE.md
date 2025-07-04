@@ -20,28 +20,40 @@
 
 ### 指示の送信方法
 ```bash
+# AI Multi-Agentディレクトリのパスを動的に取得
+AI_MULTI_AGENT_DIR=$(find $(pwd) -name "ai-multi-agent-dashboard.sh" 2>/dev/null | head -1 | xargs dirname | xargs dirname)
+if [ -z "$AI_MULTI_AGENT_DIR" ]; then
+    AI_MULTI_AGENT_DIR=$(pwd)
+fi
+
 # 特定エージェントへの指示（send-to-pane.shを使用）
-./scripts/send-to-pane.sh engineer 1 "ログイン機能を実装してください"
-./scripts/send-to-pane.sh designer 1 "ログイン画面のUIをデザインしてください"
+$AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh engineer 1 "ログイン機能を実装してください"
+$AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh designer 1 "ログイン画面のUIをデザインしてください"
 
 # 複数エージェントへの指示
 for i in {1..10}; do
-  ./scripts/send-to-pane.sh engineer $i "本日の進捗を報告してください"
+  $AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh engineer $i "本日の進捗を報告してください"
 done
 
 # デザイナー全体への指示
 for i in {1..2}; do
-  ./scripts/send-to-pane.sh designer $i "デザインレビューの準備をしてください"
+  $AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh designer $i "デザインレビューの準備をしてください"
 done
 ```
 
 ### 通知システムの確認
 ```bash
+# AI Multi-Agentディレクトリのパスを動的に取得
+AI_MULTI_AGENT_DIR=$(find $(pwd) -name "ai-multi-agent-dashboard.sh" 2>/dev/null | head -1 | xargs dirname | xargs dirname)
+if [ -z "$AI_MULTI_AGENT_DIR" ]; then
+    AI_MULTI_AGENT_DIR=$(pwd)
+fi
+
 # 未処理通知の確認
-ls -ltr notifications/pending/
+ls -ltr $AI_MULTI_AGENT_DIR/notifications/pending/
 
 # 最新の通知内容確認
-tail -5 notifications/processed/*.txt
+tail -5 $AI_MULTI_AGENT_DIR/notifications/processed/*.txt
 
 # 通知監視プロセスの状態確認
 tmux list-sessions | grep ai-multi-agent

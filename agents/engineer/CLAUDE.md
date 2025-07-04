@@ -282,12 +282,23 @@ export async function authenticate(email: string, password: string): Promise<Aut
 
 **すべてのタスクが完了したら、必ずボスに通知を送信してください：**
 
+### 🔧 AI Multi-Agentスクリプトパスの取得
+```bash
+# AI Multi-Agentディレクトリのパスを動的に取得
+AI_MULTI_AGENT_DIR=$(find $(pwd) -name "ai-multi-agent-dashboard.sh" 2>/dev/null | head -1 | xargs dirname | xargs dirname)
+if [ -z "$AI_MULTI_AGENT_DIR" ]; then
+    # 現在がai-multi-agentディレクトリの場合
+    AI_MULTI_AGENT_DIR=$(pwd)
+fi
+```
+
+### 📢 通知送信
 ```bash
 # タスク完了の通知
-./scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "タスク完了: [具体的な作業内容]"
+$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "タスク完了: [具体的な作業内容]"
 
 # 例:
-./scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "タスク完了: ユーザー認証機能の実装完了 - 全テスト通過"
+$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "タスク完了: ユーザー認証機能の実装完了 - 全テスト通過"
 ```
 
 ### 通知のタイミング
@@ -424,16 +435,16 @@ $WORKSPACE_DIR/scripts/agent-task.sh update [TASK_ID] blocked
 4. **完了通知**
    ```bash
    # PR作成完了をBossに通知
-   ./scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "PR #[番号] を作成しました: [機能名]の実装が完了"
+   $AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "PR #[番号] を作成しました: [機能名]の実装が完了"
    ```
 
 ### レビュー依頼時の通知例
 ```bash
 # 具体的な通知の送信
-./scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "レビュー依頼: PR #123 ユーザー認証機能の実装"
+$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "レビュー依頼: PR #123 ユーザー認証機能の実装"
 
 # より詳細な通知
-./scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "PR #123 作成完了 | feature/user-auth | テスト: 全通過 | カバレッジ: 85%"
+$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "PR #123 作成完了 | feature/user-auth | テスト: 全通過 | カバレッジ: 85%"
 ```
 
 ## 緊急時の連絡
@@ -442,8 +453,8 @@ $WORKSPACE_DIR/scripts/agent-task.sh update [TASK_ID] blocked
 
 ```bash
 # 緊急度の高い通知
-./scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "🚨緊急: [ブロッカー内容] - 作業停止中"
+$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh engineer-$(echo $TMUX_PANE | cut -d. -f2) "🚨緊急: [ブロッカー内容] - 作業停止中"
 
 # ブロッカー詳細の記録
-echo "ブロッカー: [詳細]" >> reports/blockers_$(date +%Y%m%d).txt
+echo "ブロッカー: [詳細]" >> $AI_MULTI_AGENT_DIR/reports/blockers_$(date +%Y%m%d).txt
 ```
