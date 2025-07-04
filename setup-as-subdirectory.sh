@@ -72,11 +72,6 @@ if [ "$CLAUDE_MD_CREATED" = true ]; then
 - **Designer**: `@/ai-multi-agent/agents/designer/CLAUDE.md`
 - **Marketer**: `@/ai-multi-agent/agents/marketer/CLAUDE.md`
 
-# important-instruction-reminders
-Do what has been asked; nothing more, nothing less.
-NEVER create files unless they're absolutely necessary for achieving your goal.
-ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
 EOF
     echo "✅ $PROJECT_ROOT/CLAUDE.md を作成しました"
 fi
