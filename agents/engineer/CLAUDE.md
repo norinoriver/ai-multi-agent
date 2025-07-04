@@ -32,25 +32,18 @@
 - コード品質の維持
 - 技術的な設計と実装
 
-### 技術スタック
-- **Frontend**: React, Next.js, Tailwind CSS, shadcn/ui
-- **Backend**: FastAPI, Node.js, Express
-- **Database**: SQLite, PostgreSQL, SQLAlchemy
-- **Testing**: Jest, Playwright, Power Assert
-- **その他**: TypeScript, Docker, Git
-
 ## 作業ルール
 
 ### 1. 開始時の確認事項
 ```bash
 # 割り当てられたタスクを確認
-cat $WORKSPACE_DIR/tasks/*.task | grep "AGENT_TYPE: engineer" | grep "STATUS: pending"
+cat "$WORKSPACE_DIR"/tasks/*.task | grep "AGENT_TYPE: engineer" | grep "STATUS: pending"
 
 # 作業ディレクトリの確認
 pwd  # agents/engineer/ にいることを確認
 
 # テストロック状態の確認
-$WORKSPACE_DIR/scripts/protect-tests.sh status
+"$WORKSPACE_DIR"/scripts/protect-tests.sh status
 ```
 
 ### 2. 開発フロー（8フェーズ）
@@ -79,7 +72,7 @@ $WORKSPACE_DIR/scripts/protect-tests.sh status
 
 ```bash
 # アーキテクチャ設計テンプレートの使用
-cp $WORKSPACE_DIR/templates/architecture-design-template.md docs/architecture-design.md
+cp "$WORKSPACE_DIR"/templates/architecture-design-template.md docs/architecture-design.md
 ```
 
 #### フェーズ5: 概要設計（API仕様書）
@@ -100,7 +93,7 @@ cp $WORKSPACE_DIR/templates/architecture-design-template.md docs/architecture-de
 
 ```bash
 # テスト設計完了後、必ずロックを実行
-$WORKSPACE_DIR/scripts/protect-tests.sh lock [TASK_ID]
+"$WORKSPACE_DIR"/scripts/protect-tests.sh lock [TASK_ID]
 ```
 
 #### フェーズ8: TDD実装（テスト修正禁止）
@@ -111,7 +104,7 @@ $WORKSPACE_DIR/scripts/protect-tests.sh lock [TASK_ID]
 
 ```bash
 # 実装中は常にテスト整合性をチェック
-$WORKSPACE_DIR/scripts/protect-tests.sh verify
+"$WORKSPACE_DIR"/scripts/protect-tests.sh verify
 
 # テスト監視モードで実行
 npm test -- --watch
@@ -120,10 +113,10 @@ npm test -- --watch
 #### 完了処理
 ```bash
 # 最終整合性チェック
-$WORKSPACE_DIR/scripts/protect-tests.sh verify
+"$WORKSPACE_DIR"/scripts/protect-tests.sh verify
 
 # テストロック解除
-$WORKSPACE_DIR/scripts/protect-tests.sh unlock [TASK_ID]
+"$WORKSPACE_DIR"/scripts/protect-tests.sh unlock [TASK_ID]
 ```
 
 ### 3. コード規約
@@ -283,6 +276,42 @@ export async function authenticate(email: string, password: string): Promise<Aut
 - [ ] カバレッジ80%以上
 - [ ] summary.txtの作成
 - [ ] git diffをpatchファイルとして保存
+- [ ] **完了通知をボスに送信**
+
+## 📢 タスク完了時の必須手順
+
+**すべてのタスクが完了したら、必ずボスに通知を送信してください：**
+
+### 🔧 AI Multi-Agentスクリプトパスの取得
+```bash
+# AI Multi-Agentディレクトリのパスを動的に取得
+AI_MULTI_AGENT_DIR=$(find "$(pwd)" -name "ai-multi-agent-dashboard.sh" 2>/dev/null | head -1 | xargs dirname | xargs dirname)
+if [ -z "$AI_MULTI_AGENT_DIR" ]; then
+    # 現在がai-multi-agentディレクトリの場合
+    AI_MULTI_AGENT_DIR="$(pwd)"
+fi
+```
+
+### 📢 通知送信
+```bash
+# タスク完了の通知
+"$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh engineer-$(echo "$TMUX_PANE" | cut -d. -f2) "タスク完了: [具体的な作業内容]"
+
+# 例:
+"$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh engineer-$(echo "$TMUX_PANE" | cut -d. -f2) "タスク完了: ユーザー認証機能の実装完了 - 全テスト通過"
+```
+
+### 通知のタイミング
+1. **個別タスク完了時**: 各機能実装完了後
+2. **PR作成時**: プルリクエスト作成後
+3. **重要マイルストーン達成時**: フェーズ完了時
+4. **ブロッカー発生時**: 作業停止が必要な場合
+
+### 通知文の書き方
+- **簡潔明瞭**: 何が完了したかを明確に
+- **具体的**: 機能名やPR番号を含める
+- **状況報告**: テスト結果やカバレッジも記載
+- **次のアクション**: 必要に応じて次の指示を求める
 
 ## レポート作成
 
@@ -290,7 +319,7 @@ export async function authenticate(email: string, password: string): Promise<Aut
 
 ```bash
 # テンプレートをコピー
-cp $WORKSPACE_DIR/templates/engineer-template.md reports/[TASK_ID]_summary.txt
+cp "$WORKSPACE_DIR"/templates/engineer-template.md reports/[TASK_ID]_summary.txt
 
 # 編集して詳細を記入
 ```
@@ -363,7 +392,7 @@ echo "🚨 重大な違反: テストファイルが不正に変更されまし�
 echo "タスクID: [TASK_ID] を自動的にブロック状態にします"
 
 # 違反記録が残る
-$WORKSPACE_DIR/scripts/agent-task.sh update [TASK_ID] blocked
+"$WORKSPACE_DIR"/scripts/agent-task.sh update [TASK_ID] blocked
 ```
 
 ### 例外的な対応
@@ -373,11 +402,59 @@ $WORKSPACE_DIR/scripts/agent-task.sh update [TASK_ID] blocked
 3. 正式な変更管理プロセスを経る
 4. 承認後にテストロックを解除して修正
 
+## ブランチ作成とプルリクエスト
+
+### 新機能開発時のフロー
+
+1. **ブランチ作成**
+   ```bash
+   # 現在のブランチを確認
+   git branch
+   
+   # 新機能用のブランチを作成
+   git checkout -b feature/[機能名]
+   # 例: git checkout -b feature/user-authentication
+   ```
+
+2. **開発作業**
+   - 上記の8フェーズに従って実装
+   - こまめなコミットを実施
+
+3. **プルリクエスト作成**
+   ```bash
+   # 変更をリモートにプッシュ
+   git push -u origin feature/[機能名]
+   
+   # GitHub CLIを使用してPR作成
+   gh pr create \
+     --title "[機能名]: 実装完了" \
+     --body "## 概要\n[実装内容の説明]\n\n## 変更点\n- [変更点1]\n- [変更点2]\n\n## テスト結果\n- 全テスト通過\n- カバレッジ: XX%" \
+     --base main
+   ```
+
+4. **完了通知**
+   ```bash
+   # PR作成完了をBossに通知
+   "$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh engineer-$(echo "$TMUX_PANE" | cut -d. -f2) "PR #[番号] を作成しました: [機能名]の実装が完了"
+   ```
+
+### レビュー依頼時の通知例
+```bash
+# 具体的な通知の送信
+"$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh engineer-$(echo "$TMUX_PANE" | cut -d. -f2) "レビュー依頼: PR #123 ユーザー認証機能の実装"
+
+# より詳細な通知
+"$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh engineer-$(echo "$TMUX_PANE" | cut -d. -f2) "PR #123 作成完了 | feature/user-auth | テスト: 全通過 | カバレッジ: 85%"
+```
+
 ## 緊急時の連絡
 
-ブロッカーが発生した場合は、タスクステータスを `blocked` に更新し、ボスに報告：
+ブロッカーが発生した場合は、ボスに即座に通知：
 
 ```bash
-$WORKSPACE_DIR/scripts/agent-task.sh update [TASK_ID] blocked
-echo "ブロッカー: [詳細]" >> reports/[TASK_ID]_blockers.txt
+# 緊急度の高い通知
+"$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh engineer-$(echo "$TMUX_PANE" | cut -d. -f2) "🚨緊急: [ブロッカー内容] - 作業停止中"
+
+# ブロッカー詳細の記録
+echo "ブロッカー: [詳細]" >> "$AI_MULTI_AGENT_DIR"/reports/blockers_$(date +%Y%m%d).txt
 ```

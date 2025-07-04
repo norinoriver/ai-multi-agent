@@ -43,7 +43,7 @@
 ### 1. 開始時の確認事項
 ```bash
 # 割り当てられたタスクを確認
-cat $WORKSPACE_DIR/tasks/*.task | grep "AGENT_TYPE: marketer" | grep "STATUS: pending"
+cat "$WORKSPACE_DIR"/tasks/*.task | grep "AGENT_TYPE: marketer" | grep "STATUS: pending"
 
 # 既存のコンテンツとブランドガイドラインを確認
 ls -la docs/brand/
@@ -226,12 +226,49 @@ git add -A && git commit -m "content: add FAQ section to improve user experience
 - [ ] 画像の著作権確認
 - [ ] summary.txtの作成
 - [ ] 全ての変更をコミット済み
+- [ ] **完了通知をボスに送信**
+
+## 📢 タスク完了時の必須手順
+
+**すべてのマーケティング作業が完了したら、必ずボスに通知を送信してください：**
+
+### 🔧 AI Multi-Agentスクリプトパスの取得
+```bash
+# AI Multi-Agentディレクトリのパスを動的に取得
+AI_MULTI_AGENT_DIR=$(find "$(pwd)" -name "ai-multi-agent-dashboard.sh" 2>/dev/null | head -1 | xargs dirname | xargs dirname)
+if [ -z "$AI_MULTI_AGENT_DIR" ]; then
+    # 現在がai-multi-agentディレクトリの場合
+    AI_MULTI_AGENT_DIR="$(pwd)"
+fi
+```
+
+### 📢 通知送信
+```bash
+# マーケティングタスク完了の通知
+"$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh marketer-$(echo "$TMUX_PANE" | cut -d. -f2) "マーケティング完了: [具体的な作業内容]"
+
+# 例:
+"$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh marketer-$(echo "$TMUX_PANE" | cut -d. -f2) "マーケティング完了: ランディングページのコピー作成完了 - SEO最適化済み"
+```
+
+### 通知のタイミング
+1. **コンテンツ作成完了時**: LP、ブログ記事、メール等の完成後
+2. **SEO最適化完了時**: メタタグ、キーワード最適化完了後
+3. **キャンペーン準備完了時**: マーケティングキャンペーン素材完成後
+4. **分析レポート完成時**: 月次・週次レポート完了後
+5. **A/Bテスト設計完了時**: テスト設計と実装準備完了後
+
+### 通知文の書き方
+- **成果物**: 完成したコンテンツやキャンペーン名
+- **最適化状況**: SEO、CVR最適化の実施状況
+- **目標指標**: 期待される効果やKPI
+- **次のアクション**: 公開依頼や追加施策の提案
 
 ## レポート作成
 
 ```bash
 # テンプレートをコピー
-cp $WORKSPACE_DIR/templates/marketer-template.md reports/[TASK_ID]_summary.txt
+cp "$WORKSPACE_DIR"/templates/marketer-template.md reports/[TASK_ID]_summary.txt
 
 # コンテンツファイルをまとめる
 mkdir -p reports/[TASK_ID]_content/
@@ -243,6 +280,21 @@ cp -r content/* reports/[TASK_ID]_content/
 - **デザイナーへ**: ブランドガイドラインとビジュアル要件
 - **エンジニアへ**: SEO技術要件とトラッキング設定
 - **ボスへ**: KPIレポートと戦略提案
+
+### 作業完了時の通知
+```bash
+# コンテンツ作成完了の通知
+"$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh marketer-$(echo "$TMUX_PANE" | cut -d. -f2) "コンテンツ作成完了: [LP名]のコピーライティングが完成しました"
+
+# SEO最適化完了の通知
+"$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh marketer-$(echo "$TMUX_PANE" | cut -d. -f2) "SEO最適化完了: [ページ名] - メタタグとキーワード設定完了"
+
+# 分析レポート完了の通知
+"$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh marketer-$(echo "$TMUX_PANE" | cut -d. -f2) "レポート完成: 月次マーケティング分析 - CVR向上施策提案あり"
+
+# 緊急時の通知
+"$AI_MULTI_AGENT_DIR"/scripts/send-notification-v2.sh marketer-$(echo "$TMUX_PANE" | cut -d. -f2) "🚨相談: ブランドメッセージについて確認が必要です"
+```
 
 ## パフォーマンス分析
 
