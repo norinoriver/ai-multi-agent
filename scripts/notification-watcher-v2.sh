@@ -3,7 +3,9 @@
 # ディレクトリベースの通知監視スクリプト
 # 各通知を個別ファイルとして作成し、ls -ltrで更新順に処理
 
-NOTIFICATION_DIR="notifications"
+# スクリプト自身のディレクトリを取得
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+NOTIFICATION_DIR="$SCRIPT_DIR/../notifications"
 PENDING_DIR="$NOTIFICATION_DIR/pending"
 PROCESSED_DIR="$NOTIFICATION_DIR/processed"
 BOSS_PANE="ai-multi-agent:0.0"

@@ -81,7 +81,9 @@ tmux send-keys -t $SESSION_NAME:0.11 "echo 'Pane 11: Designer-1' && sleep 0.1 &&
 tmux send-keys -t $SESSION_NAME:0.12 "echo 'Pane 12: Designer-2' && sleep 0.1 && claude --dangerously-skip-permissions" C-m
 tmux send-keys -t $SESSION_NAME:0.13 "echo 'Pane 13: Marketer-1' && sleep 0.1 && claude --dangerously-skip-permissions" C-m
 tmux send-keys -t $SESSION_NAME:0.14 "echo 'Pane 14: Marketer-2' && sleep 0.1 && claude --dangerously-skip-permissions" C-m
-tmux send-keys -t $SESSION_NAME:0.15 "echo 'Pane 15: Notification Monitor' && sleep 0.1 && ./scripts/notification-watcher-v2.sh" C-m
+# スクリプトディレクトリの絶対パスを取得
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+tmux send-keys -t $SESSION_NAME:0.15 "echo 'Pane 15: Notification Monitor' && sleep 0.1 && $SCRIPT_DIR/notification-watcher-v2.sh" C-m
 
 
 echo "セッション '$SESSION_NAME' を作成しました（16ペイン）"
