@@ -23,7 +23,15 @@
       "Bash(ls:*)",
       "Bash(gh pr list:*)",
       "Bash(curl:*)",
-      "Bash(gh pr view:*)"
+      "Bash(gh pr view:*)",
+      "Bash(./tests/test_boss_command.sh:*)",
+      "Bash(tmux list-panes:*)",
+      "Bash(/Users/arakawataiyuu/workspace/ai-multi-agent/scripts/create-15-panes.sh:*)",
+      "Bash(tmux kill-session:*)",
+      "Bash(mv:*)",
+      "Bash(/Users/arakawataiyuu/workspace/ai-multi-agent/scripts/ai-multi-agent-dashboard.sh:*)",
+      "Bash(./scripts/send-to-pane.sh:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   }

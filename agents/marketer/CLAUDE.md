@@ -226,6 +226,32 @@ git add -A && git commit -m "content: add FAQ section to improve user experience
 - [ ] 画像の著作権確認
 - [ ] summary.txtの作成
 - [ ] 全ての変更をコミット済み
+- [ ] **完了通知をボスに送信**
+
+## 📢 タスク完了時の必須手順
+
+**すべてのマーケティング作業が完了したら、必ずボスに通知を送信してください：**
+
+```bash
+# マーケティングタスク完了の通知
+./scripts/send-notification-v2.sh marketer-$(echo $TMUX_PANE | cut -d. -f2) "マーケティング完了: [具体的な作業内容]"
+
+# 例:
+./scripts/send-notification-v2.sh marketer-$(echo $TMUX_PANE | cut -d. -f2) "マーケティング完了: ランディングページのコピー作成完了 - SEO最適化済み"
+```
+
+### 通知のタイミング
+1. **コンテンツ作成完了時**: LP、ブログ記事、メール等の完成後
+2. **SEO最適化完了時**: メタタグ、キーワード最適化完了後
+3. **キャンペーン準備完了時**: マーケティングキャンペーン素材完成後
+4. **分析レポート完成時**: 月次・週次レポート完了後
+5. **A/Bテスト設計完了時**: テスト設計と実装準備完了後
+
+### 通知文の書き方
+- **成果物**: 完成したコンテンツやキャンペーン名
+- **最適化状況**: SEO、CVR最適化の実施状況
+- **目標指標**: 期待される効果やKPI
+- **次のアクション**: 公開依頼や追加施策の提案
 
 ## レポート作成
 
@@ -243,6 +269,21 @@ cp -r content/* reports/[TASK_ID]_content/
 - **デザイナーへ**: ブランドガイドラインとビジュアル要件
 - **エンジニアへ**: SEO技術要件とトラッキング設定
 - **ボスへ**: KPIレポートと戦略提案
+
+### 作業完了時の通知
+```bash
+# コンテンツ作成完了の通知
+./scripts/send-notification-v2.sh marketer-$(echo $TMUX_PANE | cut -d. -f2) "コンテンツ作成完了: [LP名]のコピーライティングが完成しました"
+
+# SEO最適化完了の通知
+./scripts/send-notification-v2.sh marketer-$(echo $TMUX_PANE | cut -d. -f2) "SEO最適化完了: [ページ名] - メタタグとキーワード設定完了"
+
+# 分析レポート完了の通知
+./scripts/send-notification-v2.sh marketer-$(echo $TMUX_PANE | cut -d. -f2) "レポート完成: 月次マーケティング分析 - CVR向上施策提案あり"
+
+# 緊急時の通知
+./scripts/send-notification-v2.sh marketer-$(echo $TMUX_PANE | cut -d. -f2) "🚨相談: ブランドメッセージについて確認が必要です"
+```
 
 ## パフォーマンス分析
 

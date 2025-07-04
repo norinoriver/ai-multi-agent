@@ -20,22 +20,31 @@
 
 ### 指示の送信方法
 ```bash
-# 特定エージェントへの指示
-./scripts/boss-command.sh send engineer 1 "ログイン機能を実装してください"
-./scripts/boss-command.sh send designer 1 "ログイン画面のUIをデザインしてください"
+# 特定エージェントへの指示（send-to-pane.shを使用）
+./scripts/send-to-pane.sh engineer 1 "ログイン機能を実装してください"
+./scripts/send-to-pane.sh designer 1 "ログイン画面のUIをデザインしてください"
 
-# タイプ全体への一斉指示
-./scripts/boss-command.sh broadcast engineer "本日の進捗を報告してください"
-./scripts/boss-command.sh broadcast designer "デザインレビューの準備をしてください"
+# 複数エージェントへの指示
+for i in {1..10}; do
+  ./scripts/send-to-pane.sh engineer $i "本日の進捗を報告してください"
+done
 
-# 全エージェントへの指示
-./scripts/boss-command.sh all "15:00からミーティングを開始します"
+# デザイナー全体への指示
+for i in {1..2}; do
+  ./scripts/send-to-pane.sh designer $i "デザインレビューの準備をしてください"
+done
+```
 
-# タスクの割り当て
-./scripts/boss-command.sh task engineer 1 20240628123456_engineer_login
+### 通知システムの確認
+```bash
+# 未処理通知の確認
+ls -ltr notifications/pending/
 
-# 指示履歴の確認
-./scripts/boss-command.sh status
+# 最新の通知内容確認
+tail -5 notifications/processed/*.txt
+
+# 通知監視プロセスの状態確認
+tmux list-sessions | grep ai-multi-agent
 ```
 
 ## ブレインストーミングシステム

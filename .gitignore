@@ -27,6 +27,11 @@ logs/
 agent_instructions/
 brainstorm/
 commands/
+tasks/
+
+# Notification queue files (shared across worktrees)
+notifications/
+queues/
 
 # Node modules if any
 node_modules/
