@@ -21,39 +21,39 @@
 ### 指示の送信方法
 ```bash
 # AI Multi-Agentディレクトリのパスを動的に取得
-AI_MULTI_AGENT_DIR=$(find $(pwd) -name "ai-multi-agent-dashboard.sh" 2>/dev/null | head -1 | xargs dirname | xargs dirname)
+AI_MULTI_AGENT_DIR=$(find "$(pwd)" -name "ai-multi-agent-dashboard.sh" 2>/dev/null | head -1 | xargs dirname | xargs dirname)
 if [ -z "$AI_MULTI_AGENT_DIR" ]; then
-    AI_MULTI_AGENT_DIR=$(pwd)
+    AI_MULTI_AGENT_DIR="$(pwd)"
 fi
 
 # 特定エージェントへの指示（send-to-pane.shを使用）
-$AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh engineer 1 "ログイン機能を実装してください"
-$AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh designer 1 "ログイン画面のUIをデザインしてください"
+"$AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh" engineer 1 "ログイン機能を実装してください"
+"$AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh" designer 1 "ログイン画面のUIをデザインしてください"
 
 # 複数エージェントへの指示
 for i in {1..10}; do
-  $AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh engineer $i "本日の進捗を報告してください"
+  "$AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh" engineer "$i" "本日の進捗を報告してください"
 done
 
 # デザイナー全体への指示
 for i in {1..2}; do
-  $AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh designer $i "デザインレビューの準備をしてください"
+  "$AI_MULTI_AGENT_DIR/scripts/send-to-pane.sh" designer "$i" "デザインレビューの準備をしてください"
 done
 ```
 
 ### 通知システムの確認
 ```bash
 # AI Multi-Agentディレクトリのパスを動的に取得
-AI_MULTI_AGENT_DIR=$(find $(pwd) -name "ai-multi-agent-dashboard.sh" 2>/dev/null | head -1 | xargs dirname | xargs dirname)
+AI_MULTI_AGENT_DIR=$(find "$(pwd)" -name "ai-multi-agent-dashboard.sh" 2>/dev/null | head -1 | xargs dirname | xargs dirname)
 if [ -z "$AI_MULTI_AGENT_DIR" ]; then
-    AI_MULTI_AGENT_DIR=$(pwd)
+    AI_MULTI_AGENT_DIR="$(pwd)"
 fi
 
 # 未処理通知の確認
-ls -ltr $AI_MULTI_AGENT_DIR/notifications/pending/
+ls -ltr "$AI_MULTI_AGENT_DIR/notifications/pending/"
 
 # 最新の通知内容確認
-tail -5 $AI_MULTI_AGENT_DIR/notifications/processed/*.txt
+tail -5 "$AI_MULTI_AGENT_DIR/notifications/processed/"*.txt
 
 # 通知監視プロセスの状態確認
 tmux list-sessions | grep ai-multi-agent
@@ -118,7 +118,7 @@ tmux list-sessions | grep ai-agent
 ./scripts/boss-command.sh all "朝会を開始します。進捗状況を報告してください"
 
 # ブロッカーの確認
-find reports/ -name "*_blockers.txt" -mtime -1
+find "reports/" -name "*_blockers.txt" -mtime -1
 ```
 
 ### 2. タスク管理
@@ -321,10 +321,10 @@ gh pr merge [PR番号] --squash --delete-branch
 ### 知識共有
 ```bash
 # 週次の学習事項をまとめる
-echo "## Week $(date +%V) Learnings" > docs/learnings/week_$(date +%V).md
+echo "## Week $(date +%V) Learnings" > "docs/learnings/week_$(date +%V).md"
 
 # ベストプラクティスの文書化
-cat > docs/best_practices/[topic].md
+cat > "docs/best_practices/[topic].md"
 ```
 
 ### パフォーマンス指標
@@ -450,7 +450,7 @@ git add -A && git commit -m "review: approve implementation with minor suggestio
 
 # 全エージェントへの一斉指示
 for session in $(tmux ls | grep ai-agent | cut -d: -f1); do
-  tmux send-keys -t $session "echo '新しい指示'" Enter
+  tmux send-keys -t "$session" "echo '新しい指示'" Enter
 done
 
 # レポート生成

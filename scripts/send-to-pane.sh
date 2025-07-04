@@ -27,15 +27,20 @@ fi
 
 AGENT_TYPE="$1"
 AGENT_NUM="$2"
+shift 2
 
 # 役割リマインダーオプションをチェック
 WITH_ROLE_REMINDER=false
-if [[ "${@: -1}" == "--with-role-reminder" ]]; then
+# 最後の引数を確認
+for last_arg in "$@"; do :; done
+if [[ "$last_arg" == "--with-role-reminder" ]]; then
     WITH_ROLE_REMINDER=true
-    MESSAGE="${@:3:$(($#-3))}"  # 最後の引数を除いてメッセージとして結合
-else
-    MESSAGE="${@:3}"  # 3番目以降の引数を全てメッセージとして結合
+    # 最後の引数を除外
+    set -- "${@:1:$(($#-1))}"
 fi
+
+# 残りの引数をメッセージとして結合
+MESSAGE="$*"
 
 SESSION_NAME="ai-multi-agent"
 

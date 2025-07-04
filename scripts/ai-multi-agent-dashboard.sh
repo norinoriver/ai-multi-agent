@@ -4,6 +4,30 @@
 
 SESSION_NAME="ai-multi-agent"
 
+# 必要なコマンドの存在チェック
+echo "依存コマンドをチェック中..."
+
+if ! command -v tmux &>/dev/null; then
+    echo "エラー: 'tmux' コマンドが見つかりません。インストールしてください。" >&2
+    echo "  macOS: brew install tmux" >&2
+    echo "  Ubuntu/Debian: sudo apt-get install tmux" >&2
+    exit 1
+fi
+
+if ! command -v claude &>/dev/null; then
+    echo "エラー: 'claude' コマンドが見つかりません。Claude Codeをインストールしてください。" >&2
+    exit 1
+fi
+
+if ! command -v jq &>/dev/null; then
+    echo "エラー: 'jq' コマンドが見つかりません。インストールしてください。" >&2
+    echo "  macOS: brew install jq" >&2
+    echo "  Ubuntu/Debian: sudo apt-get install jq" >&2
+    exit 1
+fi
+
+echo "すべての依存コマンドが見つかりました。"
+
 # MCP設定の同期
 echo "MCP設定を確認・同期中..."
 if command -v claude &> /dev/null; then

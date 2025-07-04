@@ -11,14 +11,14 @@
 ### 🔧 AI Multi-Agentスクリプトパスの取得
 ```bash
 # AI Multi-Agentディレクトリのパスを動的に取得
-AI_MULTI_AGENT_DIR=$(find $(pwd) -name "ai-multi-agent-dashboard.sh" 2>/dev/null | head -1 | xargs dirname | xargs dirname)
+AI_MULTI_AGENT_DIR=$(find "$(pwd)" -name "ai-multi-agent-dashboard.sh" 2>/dev/null | head -1 | xargs dirname | xargs dirname)
 if [ -z "$AI_MULTI_AGENT_DIR" ]; then
     # 現在がai-multi-agentディレクトリの場合
     AI_MULTI_AGENT_DIR=$(pwd)
 fi
 
 # タスク完了時は必ずこのスクリプトを実行
-$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE | cut -d. -f2) "🎨 デザイン完了: [作業内容]"
+"$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh" "designer-$(echo "$TMUX_PANE" | cut -d. -f2)" "🎨 デザイン完了: [作業内容]"
 ```
 
 **重要：** 完了通知は必ずこのスクリプト（`send-notification-v2.sh`）を使用してください。手動でのメッセージ送信ではなく、スクリプト実行が必須です。
@@ -64,7 +64,7 @@ $AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE |
 ### 1. 開始時の確認事項
 ```bash
 # 割り当てられたタスクを確認
-cat $WORKSPACE_DIR/tasks/*.task | grep "AGENT_TYPE: designer" | grep "STATUS: pending"
+cat "$WORKSPACE_DIR/tasks/"*.task | grep "AGENT_TYPE: designer" | grep "STATUS: pending"
 
 # デザインリソースの確認
 ls -la assets/
@@ -74,7 +74,7 @@ ls -la assets/
 **タスクを開始する際は、まず作業開始を宣言してください：**
 ```bash
 # 作業開始の宣言
-$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE | cut -d. -f2) "作業開始: [タスク名] - 開始します"
+"$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh" "designer-$(echo "$TMUX_PANE" | cut -d. -f2)" "作業開始: [タスク名] - 開始します"
 ```
 
 ### 2. デザインプロセス
@@ -87,13 +87,13 @@ $AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE |
 **各ステップ完了時は必ずスクリプト実行：**
 ```bash
 # ワイヤーフレーム完成時（スクリプト実行必須）
-$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE | cut -d. -f2) "ワイヤーフレーム完成: [画面名] - レビューお願いします"
+"$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh" "designer-$(echo "$TMUX_PANE" | cut -d. -f2)" "ワイヤーフレーム完成: [画面名] - レビューお願いします"
 
 # ビジュアルデザイン完成時（スクリプト実行必須）
-$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE | cut -d. -f2) "ビジュアルデザイン完成: [画面名] - 実装用アセット準備済み"
+"$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh" "designer-$(echo "$TMUX_PANE" | cut -d. -f2)" "ビジュアルデザイン完成: [画面名] - 実装用アセット準備済み"
 
 # プロトタイプ完成時（スクリプト実行必須）
-$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE | cut -d. -f2) "プロトタイプ完成: [機能名] - インタラクション確認可能"
+"$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh" "designer-$(echo "$TMUX_PANE" | cut -d. -f2)" "プロトタイプ完成: [機能名] - インタラクション確認可能"
 ```
 
 **📌 重要リマインダー：** 作業完了時は必ずスクリプトを実行してください。完了通知はスクリプトを利用することが絶対条件です。
@@ -108,7 +108,7 @@ $AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE |
 **長時間のタスクの場合は、30分ごとに進捗を報告してください：**
 ```bash
 # 進捗報告の例
-$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE | cut -d. -f2) "進捗報告: [画面名]のワイヤーフレーム作成中 - 60%完了"
+"$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh" "designer-$(echo "$TMUX_PANE" | cut -d. -f2)" "進捗報告: [画面名]のワイヤーフレーム作成中 - 60%完了"
 ```
 
 ## デザインシステム
@@ -262,10 +262,10 @@ git add -A && git commit -m "design: create reusable button components"
 
 ```bash
 # ❗ このスクリプトを必ず実行してください ❗
-$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE | cut -d. -f2) "🎨 デザイン完了: [具体的な作業内容]"
+"$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh" "designer-$(echo "$TMUX_PANE" | cut -d. -f2)" "🎨 デザイン完了: [具体的な作業内容]"
 
 # 具体例:
-$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE | cut -d. -f2) "🎨 デザイン完了: ログイン画面のUI設計完成 - レスポンシブ対応済み、実装準備完了"
+"$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh" "designer-$(echo "$TMUX_PANE" | cut -d. -f2)" "🎨 デザイン完了: ログイン画面のUI設計完成 - レスポンシブ対応済み、実装準備完了"
 ```
 
 ### 🔴 重要注意事項
@@ -276,7 +276,7 @@ $AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE |
 ### 🔔 通知送信の確認方法
 ```bash
 # 通知が送信されたか確認
-ls -la $AI_MULTI_AGENT_DIR/notifications/pending/ | grep designer
+ls -la "$AI_MULTI_AGENT_DIR/notifications/pending/" | grep designer
 
 # もし未送信の場合は再度実行
 echo "通知送信漏れがないか必ず確認してください！"
@@ -299,7 +299,7 @@ echo "通知送信漏れがないか必ず確認してください！"
 
 ```bash
 # テンプレートをコピー
-cp $WORKSPACE_DIR/templates/designer-template.md reports/[TASK_ID]_summary.txt
+cp "$WORKSPACE_DIR/templates/designer-template.md" "reports/[TASK_ID]_summary.txt"
 
 # デザインファイルとアセットをまとめる
 tar -czf reports/[TASK_ID]_design_assets.tar.gz assets/ mockups/
@@ -314,13 +314,13 @@ tar -czf reports/[TASK_ID]_design_assets.tar.gz assets/ mockups/
 ### 作業完了時の通知
 ```bash
 # デザイン作業完了の通知
-$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE | cut -d. -f2) "UI設計完了: [画面名]のデザインが完成しました"
+"$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh" "designer-$(echo "$TMUX_PANE" | cut -d. -f2)" "UI設計完了: [画面名]のデザインが完成しました"
 
 # レビュー依頼の通知
-$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE | cut -d. -f2) "レビュー依頼: [機能名]のUIデザイン - プロトタイプ作成完了"
+"$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh" "designer-$(echo "$TMUX_PANE" | cut -d. -f2)" "レビュー依頼: [機能名]のUIデザイン - プロトタイプ作成完了"
 
 # 緊急時の通知
-$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh designer-$(echo $TMUX_PANE | cut -d. -f2) "🚨確認要請: デザイン方針について相談があります"
+"$AI_MULTI_AGENT_DIR/scripts/send-notification-v2.sh" "designer-$(echo "$TMUX_PANE" | cut -d. -f2)" "🚨確認要請: デザイン方針について相談があります"
 ```
 
 ## デザインレビューの準備

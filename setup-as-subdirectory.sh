@@ -22,7 +22,24 @@ echo "  - Project Root: $PROJECT_ROOT"
 # 1. プロジェクトルートディレクトリにCLAUDE.mdを作成
 echo "📝 プロジェクトルートにCLAUDE.mdを作成中..."
 
-cat > "$PROJECT_ROOT/CLAUDE.md" << 'EOF'
+# 既存のCLAUDE.mdがある場合は確認
+if [ -f "$PROJECT_ROOT/CLAUDE.md" ]; then
+    echo "⚠️  既存のCLAUDE.mdが見つかりました: $PROJECT_ROOT/CLAUDE.md"
+    echo "上書きしますか？ (y/N): "
+    read -r response
+    if [[ ! "$response" =~ ^[Yy]$ ]]; then
+        echo "📄 CLAUDE.mdの作成をスキップしました"
+        CLAUDE_MD_CREATED=false
+    else
+        echo "📄 既存のCLAUDE.mdを上書きします"
+        CLAUDE_MD_CREATED=true
+    fi
+else
+    CLAUDE_MD_CREATED=true
+fi
+
+if [ "$CLAUDE_MD_CREATED" = true ]; then
+    cat > "$PROJECT_ROOT/CLAUDE.md" << 'EOF'
 # CLAUDE.md
 
 ## ✅ ロール確認と指示書読み込み手順
@@ -61,8 +78,8 @@ NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
 NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
 EOF
-
-echo "✅ $PROJECT_ROOT/CLAUDE.md を作成しました"
+    echo "✅ $PROJECT_ROOT/CLAUDE.md を作成しました"
+fi
 
 # 2. プロジェクトルートの.gitignoreにai-multi-agentを追加
 GITIGNORE_PATH="$PROJECT_ROOT/.gitignore"
@@ -111,7 +128,11 @@ echo ""
 echo "🎉 AI Multi-Agent サブディレクトリセットアップが完了しました！"
 echo ""
 echo "📋 セットアップ結果:"
-echo "  ✅ $PROJECT_ROOT/CLAUDE.md を作成"
+if [ "$CLAUDE_MD_CREATED" = true ]; then
+    echo "  ✅ $PROJECT_ROOT/CLAUDE.md を作成"
+else
+    echo "  ⏭️  $PROJECT_ROOT/CLAUDE.md の作成をスキップ"
+fi
 echo "  ✅ $PROJECT_ROOT/.gitignore にai-multi-agent除外設定を追加"
 echo "  ✅ 必要なディレクトリを作成"
 echo "  ✅ スクリプトファイルの実行権限を設定"

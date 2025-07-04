@@ -3,7 +3,9 @@
 # ディレクトリベースの通知送信スクリプト
 # 各通知を個別ファイルとして作成
 
-NOTIFICATION_DIR="notifications"
+# スクリプト自身のディレクトリを取得
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+NOTIFICATION_DIR="${SCRIPT_DIR}/../notifications"
 PENDING_DIR="$NOTIFICATION_DIR/pending"
 
 # 使用方法
@@ -20,7 +22,8 @@ if [ $# -lt 2 ]; then
 fi
 
 FROM_AGENT="$1"
-MESSAGE="${@:2}"
+shift
+MESSAGE="$*"
 
 # 必要なディレクトリの作成
 mkdir -p "$PENDING_DIR"
