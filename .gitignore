@@ -36,4 +36,5 @@ queues/
 # Node modules if any
 node_modules/
 
-./worktrees/
+
+worktrees/
