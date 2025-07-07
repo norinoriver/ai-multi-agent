@@ -152,11 +152,23 @@ flowchart TD
     NextTest -->|Yes| RedPhase
     NextTest -->|No| PRCreate[PR作成]
     
-    PRCreate --> CodeReview[コードレビュー]
-    CodeReview --> ReviewOK{レビューOK?}
-    ReviewOK -->|No| CodeFix[レビュー指摘対応]
+    PRCreate --> InternalReview[内部レビュー（Claude Code）]
+    PRCreate --> ExternalReview[外部レビュー（CodeRabbit）]
+    
+    InternalReview --> InternalOK{内部レビューOK?}
+    ExternalReview --> Polling[GitHub APIポーリング]
+    Polling --> ExternalComplete{外部レビュー完了?}
+    ExternalComplete -->|No| Polling
+    ExternalComplete -->|Yes| ExternalOK{外部レビューOK?}
+    
+    InternalOK -->|Yes| WaitExternal[外部レビュー待機]
+    InternalOK -->|No| CodeFix[レビュー指摘対応]
+    ExternalOK -->|Yes| AllReviewsOK[全レビュー完了]
+    ExternalOK -->|No| CodeFix
+    WaitExternal --> ExternalOK
+    
     CodeFix --> RedPhase
-    ReviewOK -->|Yes| Merge[マージ]
+    AllReviewsOK --> Merge[マージ]
     
     ArchWork --> ArchReview[アーキテクチャレビュー]
     
