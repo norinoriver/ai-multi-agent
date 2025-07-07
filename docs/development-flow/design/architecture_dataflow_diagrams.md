@@ -161,8 +161,14 @@ flowchart TD
     ExternalComplete -->|No| Polling
     ExternalComplete -->|Yes| ExternalOK{外部レビューOK?}
     
-    InternalOK -->|Yes| WaitExternal[外部レビュー待機]
+    InternalOK -->|Yes| TestBranchSetup[専用テストブランチにPR内容反映]
     InternalOK -->|No| CodeFix[レビュー指摘対応]
+    
+    TestBranchSetup --> E2ETest[E2E/統合テスト実行]
+    E2ETest --> E2EOK{E2E/統合テストOK?}
+    E2EOK -->|No| CodeFix
+    E2EOK -->|Yes| WaitExternal[外部レビュー待機]
+    
     ExternalOK -->|Yes| AllReviewsOK[全レビュー完了]
     ExternalOK -->|No| CodeFix
     WaitExternal --> ExternalOK
@@ -296,12 +302,14 @@ graph TB
     MainRepo --> WT3[Worktree 3<br/>feature/task-003]
     MainRepo --> WT4[Worktree 4<br/>feature/test-001]
     MainRepo --> WT5[Worktree 5<br/>feature/arch-001]
+    MainRepo --> WTReview[Worktree Review<br/>review-test-branch]
     
     WT1 --> SE1[SE Agent 1]
     WT2 --> SE2[SE Agent 2]
     WT3 --> SE3[SE Agent 3]
     WT4 --> QA[QA Agent]
     WT5 --> Arch[Architect Agent]
+    WTReview --> Review[Review Agent<br/>E2E/統合テスト実行]
     
     SE1 --> PR1[PR #001]
     SE2 --> PR2[PR #002]
