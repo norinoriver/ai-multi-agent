@@ -35,3 +35,5 @@ queues/
 
 # Node modules if any
 node_modules/
+
+/ai-multi-agent
