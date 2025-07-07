@@ -142,29 +142,29 @@ flowchart TD
     TaskDecomp --> TaskAssign[タスク割り当て]
     TaskAssign --> ParallelDev[並列開発]
     
-    ParallelDev --> CodeImpl[コード実装]
     ParallelDev --> TestImpl[テスト実装]
     ParallelDev --> ArchWork[アーキテクチャ作業]
+    ParallelDev --> CodeImpl[コード実装]
     
-    CodeImpl --> PRCreate[PR作成]
-    TestImpl --> TestExec[テスト実行]
-    ArchWork --> ArchReview[アーキテクチャレビュー]
+    CodeImpl --> TestExec[テスト実行]
+    TestExec --> TestOK{テストOK?}
+    TestOK -->|No| CodeImpl
+    TestOK -->|Yes| PRCreate[PR作成]
     
     PRCreate --> CodeReview[コードレビュー]
     CodeReview --> ReviewOK{レビューOK?}
-    ReviewOK -->|No| CodeImpl
+    ReviewOK -->|No| CodeFix[レビュー指摘対応]
+    CodeFix --> TestExec
     ReviewOK -->|Yes| Merge[マージ]
     
-    TestExec --> TestOK{テストOK?}
-    TestOK -->|No| CodeImpl
-    TestOK -->|Yes| QualityReport[品質レポート]
+    TestImpl --> ArchReview[アーキテクチャレビュー]
+    ArchWork --> ArchReview
     
     ArchReview --> ArchOK{アーキテクチャOK?}
     ArchOK -->|No| ArchWork
     ArchOK -->|Yes| ArchApprove[アーキテクチャ承認]
     
     Merge --> Progress[進捗更新]
-    QualityReport --> Progress
     ArchApprove --> Progress
     
     Progress --> Complete{完了?}
