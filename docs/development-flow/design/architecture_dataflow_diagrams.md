@@ -142,30 +142,23 @@ flowchart TD
     TaskDecomp --> TaskAssign[タスク割り当て]
     TaskAssign --> ParallelDev[並列開発]
     
-    ParallelDev --> TestImpl[テスト実装（Red）]
+    ParallelDev --> TDDCycle[TDDサイクル開始]
     ParallelDev --> ArchWork[アーキテクチャ作業]
     
-    TestImpl --> TestExecRed[テスト実行（失敗確認）]
-    TestExecRed --> CodeImpl[コード実装（Green）]
-    
-    CodeImpl --> TestExec[テスト実行]
-    TestExec --> TestOK{テストOK?}
-    TestOK -->|No| CodeImpl
-    TestOK -->|Yes| Refactor[リファクタリング]
-    
-    Refactor --> TestExecRefactor[テスト実行（回帰確認）]
-    TestExecRefactor --> RefactorOK{リファクタOK?}
-    RefactorOK -->|No| Refactor
-    RefactorOK -->|Yes| PRCreate[PR作成]
+    TDDCycle --> RedPhase[Red: 失敗するテストを書く]
+    RedPhase --> GreenPhase[Green: 最小限の実装でテストを通す]
+    GreenPhase --> RefactorPhase[Refactor: 重複・設計改善]
+    RefactorPhase --> NextTest{次のテストが必要?}
+    NextTest -->|Yes| RedPhase
+    NextTest -->|No| PRCreate[PR作成]
     
     PRCreate --> CodeReview[コードレビュー]
     CodeReview --> ReviewOK{レビューOK?}
     ReviewOK -->|No| CodeFix[レビュー指摘対応]
-    CodeFix --> TestExec
+    CodeFix --> RedPhase
     ReviewOK -->|Yes| Merge[マージ]
     
-    TestImpl --> ArchReview[アーキテクチャレビュー]
-    ArchWork --> ArchReview
+    ArchWork --> ArchReview[アーキテクチャレビュー]
     
     ArchReview --> ArchOK{アーキテクチャOK?}
     ArchOK -->|No| ArchWork
