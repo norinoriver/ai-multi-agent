@@ -40,7 +40,7 @@ graph TB
     
     subgraph "Infrastructure Layer"
         TS[tmux Session Manager]
-        GW[Git Worktree Manager]
+        GIT[Git Repository]
         GM[GitHub MCP]
         FS[File System Storage]
     end
@@ -67,14 +67,13 @@ graph TB
     TM --> A
     CM --> FS
     WM --> TS
-    SE1 --> GW
-    SE2 --> GW
-    SE3 --> GW
-    QA --> GW
+    SE1 --> GIT
+    SE2 --> GIT
+    SE3 --> GIT
+    QA --> GIT
     R --> GM
-    A --> GW
+    A --> GIT
     TS --> OS
-    GW --> GIT
     GM --> GH
     FS --> OS
 ```
@@ -252,9 +251,9 @@ sequenceDiagram
 ```mermaid
 flowchart TD
     TaskAssigned[タスク割り当て] --> BranchReq[ブランチ作成要求]
-    BranchReq --> GitManager[Git Worktree Manager]
+    BranchReq --> GitCmd[git worktree add コマンド実行]
     
-    GitManager --> CheckMain[メインブランチ確認]
+    GitCmd --> CheckMain[メインブランチ確認]
     CheckMain --> CreateBranch[feature ブランチ作成]
     CreateBranch --> CreateWorktree[worktree 作成]
     CreateWorktree --> SetupEnv[開発環境セットアップ]
@@ -272,7 +271,7 @@ flowchart TD
     ReviewOK -->|Yes| Merge[メインブランチマージ]
     
     Merge --> Cleanup[worktree クリーンアップ]
-    Cleanup --> BranchDelete[feature ブランチ削除]
+    Cleanup --> BranchDelete[git worktree remove コマンド実行]
     BranchDelete --> Complete[完了]
 ```
 

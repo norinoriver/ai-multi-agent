@@ -49,7 +49,7 @@ graph TB
     
     subgraph "Infrastructure Layer"
         Tmux[tmux Session Manager]
-        Git[Git Worktree Manager]
+        Git[Git Repository]
         GitHub[GitHub MCP]
         Storage[Shared Storage]
     end
@@ -112,7 +112,7 @@ graph TB
 - **責務**: システム基盤とツール連携
 - **コンポーネント**:
   - tmux Session Manager: エージェント実行環境
-  - Git Worktree Manager: 並列開発環境
+  - Git Repository: バージョン管理・並列開発環境
   - GitHub MCP: GitHub連携
   - Shared Storage: エージェント間データ共有
 
@@ -182,7 +182,7 @@ graph TB
 - **入力**: 実装タスク、技術仕様
 - **処理**: コード実装、単体テスト
 - **出力**: 実装コード、PR作成
-- **依存関係**: Git Worktree Manager, GitHub MCP
+- **依存関係**: Git Repository, GitHub MCP
 
 #### 4.3.2 QA Agent
 - **入力**: テストタスク、実装コード
@@ -200,7 +200,7 @@ graph TB
 - **入力**: アーキテクチャ設計タスク、技術要件
 - **処理**: システム設計、インフラ構築、技術ドキュメント作成
 - **出力**: 設計書、インフラスクリプト、MCPサーバー設定
-- **依存関係**: Git Worktree Manager, 各種MCPサーバー
+- **依存関係**: Git Repository, 各種MCPサーバー
 
 ### 4.4 Infrastructure Module
 
@@ -210,11 +210,11 @@ graph TB
 - **出力**: エージェント実行環境
 - **依存関係**: OS (macOS/Linux)
 
-#### 4.4.2 Git Worktree Manager
-- **入力**: ブランチ作成要求、タスクID
-- **処理**: worktree作成、ブランチ管理
-- **出力**: 独立開発環境
-- **依存関係**: Git
+#### 4.4.2 Git Repository
+- **入力**: エージェントからのgitコマンド実行
+- **処理**: worktree作成・削除、ブランチ管理、コミット・プッシュ
+- **出力**: 独立開発環境、バージョン履歴
+- **依存関係**: ファイルシステム
 
 #### 4.4.3 GitHub MCP
 - **入力**: PR作成/更新要求
@@ -244,8 +244,8 @@ sequenceDiagram
     P->>T: タスク分解依頼
     T->>P: 分解済みタスク
     P->>S: タスク割り当て
-    S->>G: ブランチ作成
-    G->>S: 作業環境
+    S->>G: git worktree add
+    G->>S: 作業環境準備完了
     S->>S: 実装作業
     S->>GH: PR作成
     GH->>P: 完了通知

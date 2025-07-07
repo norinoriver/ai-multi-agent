@@ -104,9 +104,9 @@ tmux send-keys -t ai-multi-agent:0.1 "start task-001" C-m
 
 ### 2.3 Git インターフェース
 
-#### 2.3.1 Git Worktree 作成
+#### 2.3.1 エージェントによるGit Worktree 操作
 ```bash
-# worktree作成コマンド
+# エージェントが直接実行するworktree作成コマンド
 git worktree add <path> <branch>
 
 # 例
@@ -117,14 +117,18 @@ git worktree add ../worktrees/feature-task-001 feature/task-001
 - `path`: worktreeを作成するパス
 - `branch`: 作成または切り替えるブランチ名
 
-#### 2.3.2 Git Worktree 削除
+#### 2.3.2 エージェントによるGit Worktree 削除
 ```bash
-# worktree削除コマンド  
+# エージェントが直接実行するworktree削除コマンド
 git worktree remove <path>
 
 # 例
 git worktree remove ../worktrees/feature-task-001
 ```
+
+**注意:**
+- 各エージェントが必要に応じて直接gitコマンドを実行
+- Git Worktree Managerのような中間レイヤーは不要
 
 ## 3. 内部インターフェース仕様
 
