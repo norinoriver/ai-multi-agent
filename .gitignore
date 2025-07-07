@@ -37,3 +37,5 @@ queues/
 node_modules/
 
 /ai-multi-agent
+
+/.claude
