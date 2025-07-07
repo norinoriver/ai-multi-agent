@@ -36,6 +36,7 @@ graph TB
         PM[PM Agent]
         TaskManager[Task Manager]
         CommManager[Communication Manager]
+        StatusManager[Agent Status Manager]
     end
     
     subgraph "Execution Layer"
@@ -59,6 +60,8 @@ graph TB
     Boss --> Dashboard
     PM --> TaskManager
     PM --> CommManager
+    PM --> StatusManager
+    StatusManager --> TaskManager
     TaskManager --> SE1
     TaskManager --> SE2
     TaskManager --> SE3
@@ -66,6 +69,7 @@ graph TB
     TaskManager --> Review
     TaskManager --> Arch
     CommManager --> Storage
+    StatusManager --> Storage
     SE1 --> Git
     SE2 --> Git
     SE3 --> Git
@@ -99,6 +103,7 @@ graph TB
   - PM Agent: プロジェクト管理、タスク分解・割り当て
   - Task Manager: タスク状態管理、進捗追跡
   - Communication Manager: エージェント間通信
+  - Agent Status Manager: エージェント状態監視・管理
 
 #### 2.2.4 Execution Layer
 - **責務**: 実際の開発作業実行
@@ -175,6 +180,12 @@ graph TB
 - **処理**: メッセージルーティング、配信確認
 - **出力**: メッセージ配信、ログ
 - **依存関係**: Shared Storage, tmux
+
+#### 4.2.4 Agent Status Manager
+- **入力**: エージェント状態変更通知
+- **処理**: エージェント状態監視、空きエージェント検出
+- **出力**: 利用可能エージェント一覧、状態レポート
+- **依存関係**: Shared Storage
 
 ### 4.3 Execution Module
 
