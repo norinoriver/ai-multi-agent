@@ -142,14 +142,21 @@ flowchart TD
     TaskDecomp --> TaskAssign[タスク割り当て]
     TaskAssign --> ParallelDev[並列開発]
     
-    ParallelDev --> TestImpl[テスト実装]
+    ParallelDev --> TestImpl[テスト実装（Red）]
     ParallelDev --> ArchWork[アーキテクチャ作業]
-    ParallelDev --> CodeImpl[コード実装]
+    
+    TestImpl --> TestExecRed[テスト実行（失敗確認）]
+    TestExecRed --> CodeImpl[コード実装（Green）]
     
     CodeImpl --> TestExec[テスト実行]
     TestExec --> TestOK{テストOK?}
     TestOK -->|No| CodeImpl
-    TestOK -->|Yes| PRCreate[PR作成]
+    TestOK -->|Yes| Refactor[リファクタリング]
+    
+    Refactor --> TestExecRefactor[テスト実行（回帰確認）]
+    TestExecRefactor --> RefactorOK{リファクタOK?}
+    RefactorOK -->|No| Refactor
+    RefactorOK -->|Yes| PRCreate[PR作成]
     
     PRCreate --> CodeReview[コードレビュー]
     CodeReview --> ReviewOK{レビューOK?}
