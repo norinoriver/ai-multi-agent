@@ -21,9 +21,6 @@
 
 ```mermaid
 erDiagram
-    AGENT ||--o{ TASK : assigns
-    AGENT ||--o{ MESSAGE : sends
-    AGENT ||--o{ STATUS_HISTORY : has
     AGENT {
         string agent_id PK
         string type
@@ -34,8 +31,6 @@ erDiagram
         datetime updated_at
     }
     
-    TASK ||--o{ TASK_HISTORY : has
-    TASK ||--o{ TASK_DEPENDENCY : depends_on
     TASK {
         string task_id PK
         string title
@@ -51,8 +46,6 @@ erDiagram
         datetime completed_at
     }
     
-    MESSAGE }o--|| AGENT : from
-    MESSAGE }o--|| AGENT : to
     MESSAGE {
         string message_id PK
         string from_agent FK
@@ -88,6 +81,15 @@ erDiagram
         string depends_on_task_id FK
         string dependency_type
     }
+    
+    %% リレーション定義
+    AGENT ||--o{ TASK : assigns
+    AGENT ||--o{ MESSAGE : sends
+    AGENT ||--o{ STATUS_HISTORY : has
+    TASK ||--o{ TASK_HISTORY : has
+    TASK ||--o{ TASK_DEPENDENCY : depends_on
+    MESSAGE }o--|| AGENT : from
+    MESSAGE }o--|| AGENT : to
 ```
 
 ## 3. ファイルベースデータ構造
