@@ -51,8 +51,8 @@ erDiagram
         datetime completed_at
     }
     
-    MESSAGE ||--|| AGENT : from
-    MESSAGE ||--|| AGENT : to
+    MESSAGE }o--|| AGENT : from
+    MESSAGE }o--|| AGENT : to
     MESSAGE {
         string message_id PK
         string from_agent FK
