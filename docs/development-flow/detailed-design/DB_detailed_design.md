@@ -1,102 +1,186 @@
-# データベース詳細設計書
+# ファイルベースデータ設計書
 ## Multi-Agent Claude Code Development System (MACCDS)
 ### Version 1.0.0
 
 ## 1. 概要
 
 ### 1.1 目的
-本文書は、MACCDSにおけるデータ永続化層の詳細設計を定義する。ファイルベースのデータストレージを中心に、データ構造、アクセスパターン、インデックス戦略を記述する。
+本文書は、MACCDSにおけるファイルベースデータ永続化層の詳細設計を定義する。ファイル構造、データスキーマ、アクセスパターンを記述する。
 
-### 1.2 データストレージ選定理由
-- **ファイルベース**: シンプルで可搬性が高い
-- **JSON/YAML形式**: 人間が読みやすく、デバッグが容易
-- **ディレクトリ構造**: 自然な階層表現とアクセス制御
+### 1.2 ファイルベースアプローチの選定理由
+- **シンプルさ**: DBサーバー不要で軽量
+- **可搬性**: ファイルシステムがあれば動作
+- **可視性**: 人間が直接ファイル内容を確認可能
+- **デバッグ容易性**: ファイル操作でトラブルシューティング可能
 
 ### 1.3 将来の拡張性
 必要に応じてRDBMSやNoSQLデータベースへの移行も考慮した設計とする。
 
-## 2. データモデル設計
+## 2. ファイル構造設計
 
-### 2.1 ERD（Entity Relationship Diagram）
+### 2.1 全体ディレクトリ構造
 
 ```mermaid
-erDiagram
-    AGENT {
-        string agent_id PK
-        string type
-        string status
-        string worktree_path
-        json capabilities
-        datetime created_at
-        datetime updated_at
-    }
+graph TD
+    A[shared/] --> B[agents/]
+    A --> C[tasks/]
+    A --> D[messages/]
+    A --> E[metrics/]
+    A --> F[logs/]
+    A --> G[indexes/]
     
-    TASK {
-        string task_id PK
-        string title
-        string description
-        string type
-        string status
-        string priority
-        int story_points
-        string assignee FK
-        string branch
-        datetime created_at
-        datetime updated_at
-        datetime completed_at
-    }
+    B --> B1[metadata/]
+    B --> B2[status/]
+    B --> B3[history/]
     
-    MESSAGE {
-        string message_id PK
-        string from_agent FK
-        string to_agent FK
-        string type
-        json content
-        string correlation_id
-        datetime created_at
-        int ttl
-    }
+    C --> C1[active/]
+    C --> C2[completed/]
+    C --> C3[dependencies/]
+    C --> C4[history/]
     
-    TASK_HISTORY {
-        string history_id PK
-        string task_id FK
-        string field_name
-        string old_value
-        string new_value
-        string changed_by FK
-        datetime changed_at
-    }
+    D --> D1[inbox/]
+    D --> D2[sent/]
+    D --> D3[temp/]
     
-    STATUS_HISTORY {
-        string history_id PK
-        string agent_id FK
-        string old_status
-        string new_status
-        datetime changed_at
-    }
+    E --> E1[YYYYMMDD/]
+    F --> F2[YYYYMMDD/]
     
-    TASK_DEPENDENCY {
-        string dependency_id PK
-        string task_id FK
-        string depends_on_task_id FK
-        string dependency_type
-    }
-    
-    %% リレーション定義
-    AGENT ||--o{ TASK : assigns
-    AGENT ||--o{ MESSAGE : sends
-    AGENT ||--o{ STATUS_HISTORY : has
-    TASK ||--o{ TASK_HISTORY : has
-    TASK ||--o{ TASK_DEPENDENCY : depends_on
+    B1 --> B1A[agent_id.json]
+    B2 --> B2A[agent_id_status]
+    C1 --> C1A[task_uuid.json]
+    D1 --> D1A[agent_id/]
 ```
 
-**注記：** 
-- MESSAGEエンティティは、from_agent と to_agent の両方でAGENTエンティティを参照します
-- 一つのメッセージは送信者（from）と受信者（to）の関係を持ちます
+### 2.2 データエンティティ関係図
 
-## 3. ファイルベースデータ構造
+```mermaid
+graph LR
+    A[Agent Metadata] -->|assigns| B[Task Data]
+    A -->|sends| C[Message Data]
+    A -->|has| D[Status History]
+    B -->|has| E[Task History]
+    B -->|depends_on| F[Task Dependencies]
+    
+    A -.->|file ref| A1[agents/metadata/]
+    B -.->|file ref| B1[tasks/active/]
+    C -.->|file ref| C1[messages/inbox/]
+    D -.->|file ref| D1[agents/history/]
+    E -.->|file ref| E1[tasks/history/]
+    F -.->|file ref| F1[tasks/dependencies/]
+```
 
-### 3.1 ディレクトリレイアウト
+## 3. JSONスキーマ設計
+
+### 3.1 Agent Metadata スキーマ
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "agent_id": {"type": "string", "pattern": "^[a-z_]+$"},
+    "type": {"enum": ["boss", "pm", "engineer", "qa", "review", "architect"]},
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "max_concurrent_tasks": {"type": "integer", "minimum": 1},
+        "preferred_languages": {"type": "array", "items": {"type": "string"}},
+        "tmux_session": {"type": "string"},
+        "tmux_window": {"type": "integer"},
+        "tmux_pane": {"type": "integer"}
+      }
+    },
+    "performance_stats": {
+      "type": "object",
+      "properties": {
+        "total_tasks_completed": {"type": "integer", "minimum": 0},
+        "average_completion_time_hours": {"type": "number", "minimum": 0},
+        "success_rate": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"}
+  },
+  "required": ["agent_id", "type", "capabilities", "created_at", "updated_at"]
+}
+```
+
+### 3.2 Task Data スキーマ
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^task_[a-f0-9-]+$"},
+    "title": {"type": "string", "maxLength": 200},
+    "description": {"type": "string"},
+    "type": {"enum": ["implementation", "testing", "review", "architecture", "infrastructure", "documentation"]},
+    "status": {"enum": ["created", "assigned", "in_progress", "review", "testing", "completed", "blocked", "cancelled"]},
+    "priority": {"enum": ["high", "medium", "low"]},
+    "story_points": {"type": "integer", "minimum": 1, "maximum": 13},
+    "assignee": {"type": "string", "pattern": "^[a-z_]+$"},
+    "branch": {"type": "string", "pattern": "^feature/task-[a-f0-9-]+$"},
+    "pull_request_id": {"type": ["integer", "null"]},
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_by": {"type": "string"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "updated_at": {"type": "string", "format": "date-time"},
+        "started_at": {"type": ["string", "null"], "format": "date-time"},
+        "estimated_completion": {"type": ["string", "null"], "format": "date-time"}
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "description": {"type": "string"},
+          "testable": {"type": "boolean"},
+          "completed": {"type": "boolean"}
+        },
+        "required": ["id", "description", "testable", "completed"]
+      }
+    },
+    "tags": {"type": "array", "items": {"type": "string"}}
+  },
+  "required": ["task_id", "title", "type", "status", "priority", "story_points", "metadata"]
+}
+```
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "message_id": {"type": "string", "pattern": "^msg_[a-f0-9-]+$"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "from": {"type": "string", "pattern": "^[a-z_]+$"},
+    "to": {"type": "string", "pattern": "^[a-z_]+|broadcast$"},
+    "type": {"enum": ["task_assignment", "progress_update", "blocker_notification", "review_request", "command"]},
+    "priority": {"enum": ["high", "medium", "low"]},
+    "content": {"type": "object"},
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "correlation_id": {"type": "string"},
+        "reply_to": {"type": "string"},
+        "ttl": {"type": "integer", "minimum": 0},
+        "retry_count": {"type": "integer", "minimum": 0}
+      }
+    }
+  },
+  "required": ["message_id", "timestamp", "from", "to", "type", "content"]
+}
+```
+
+## 4. ファイル配置詳細
+
+### 4.1 ディレクトリレイアウト
 
 ```
 shared/
@@ -143,98 +227,13 @@ shared/
         └── {agent_id}.log
 ```
 
-### 3.2 データファイル仕様
+### 4.2 サンプルデータファイル
 
-#### 3.2.1 Agent Metadata (agents/metadata/agent_id.json)
+詳細なサンプルデータについては、各JSONスキーマに基づいて生成される。
 
-```json
-{
-  "agent_id": "se_agent_1",
-  "type": "engineer",
-  "capabilities": ["frontend", "backend", "testing"],
-  "configuration": {
-    "max_concurrent_tasks": 3,
-    "preferred_languages": ["javascript", "python"],
-    "tmux_session": "ai-multi-agent",
-    "tmux_window": 1,
-    "tmux_pane": 0
-  },
-  "performance_stats": {
-    "total_tasks_completed": 145,
-    "average_completion_time_hours": 2.5,
-    "success_rate": 0.95
-  },
-  "created_at": "2025-01-01T00:00:00Z",
-  "updated_at": "2025-01-07T12:00:00Z"
-}
-```
+## 5. インデックス設計
 
-#### 3.2.2 Task Data (tasks/active/task_uuid.json)
-
-```json
-{
-  "task_id": "task_f47ac10b-58cc-4372-a567-0e02b2c3d479",
-  "title": "Implement user authentication module",
-  "description": "Create JWT-based authentication with refresh tokens...",
-  "type": "implementation",
-  "status": "in_progress",
-  "priority": "high",
-  "story_points": 8,
-  "assignee": "se_agent_1",
-  "branch": "feature/task-f47ac10b",
-  "pull_request_id": null,
-  "metadata": {
-    "created_by": "boss_agent",
-    "created_at": "2025-01-07T10:00:00Z",
-    "updated_at": "2025-01-07T12:30:00Z",
-    "started_at": "2025-01-07T11:00:00Z",
-    "estimated_completion": "2025-01-07T16:00:00Z"
-  },
-  "acceptance_criteria": [
-    {
-      "id": "ac_1",
-      "description": "Users can register with email/password",
-      "testable": true,
-      "completed": false
-    },
-    {
-      "id": "ac_2",
-      "description": "JWT tokens expire after 1 hour",
-      "testable": true,
-      "completed": false
-    }
-  ],
-  "tags": ["authentication", "security", "backend"]
-}
-```
-
-#### 3.2.3 Message Format (messages/inbox/agent_id/message.json)
-
-```json
-{
-  "message_id": "msg_550e8400-e29b-41d4-a716-446655440000",
-  "timestamp": "2025-01-07T12:30:45.123Z",
-  "from": "pm_agent",
-  "to": "se_agent_1",
-  "type": "task_assignment",
-  "priority": "high",
-  "content": {
-    "action": "ASSIGN_TASK",
-    "task_id": "task_f47ac10b-58cc-4372-a567-0e02b2c3d479",
-    "deadline": "2025-01-07T18:00:00Z",
-    "notes": "Priority task - authentication is blocking other features"
-  },
-  "metadata": {
-    "correlation_id": "req_123456",
-    "ttl": 3600,
-    "retry_count": 0
-  }
-}
-```
-
-## 4. インデックス設計
-
-### 4.1 ファイル名ベースインデックス
+### 5.1 ファイル名ベースインデックス
 
 ファイル名に重要な属性を含めることで、高速な検索を実現：
 
@@ -250,7 +249,7 @@ ls shared/messages/sent/20250107/*.json
 ls shared/agents/status/*_free
 ```
 
-### 4.2 メタデータインデックス
+### 5.2 メタデータインデックス
 
 定期的に生成される集約ファイルでクエリ性能を向上：
 
@@ -280,7 +279,7 @@ ls shared/agents/status/*_free
 }
 ```
 
-### 4.3 インデックス更新スクリプト
+### 5.3 インデックス更新スクリプト
 
 ```bash
 #!/bin/bash
@@ -310,9 +309,9 @@ update_task_index() {
 }
 ```
 
-## 5. データアクセスパターン
+## 6. データアクセスパターン
 
-### 5.1 読み取りパターン
+### 6.1 読み取りパターン
 
 ```bash
 # 単一エンティティ読み取り
@@ -337,7 +336,7 @@ count_agent_tasks() {
 }
 ```
 
-### 5.2 書き込みパターン
+### 6.2 書き込みパターン
 
 ```bash
 # トランザクション的書き込み
@@ -368,9 +367,9 @@ update_task_status() {
 }
 ```
 
-## 6. データ整合性とトランザクション
+## 7. データ整合性とトランザクション
 
-### 6.1 楽観的ロック
+### 7.1 楽観的ロック
 
 ```bash
 # バージョン番号による楽観的ロック
@@ -393,7 +392,7 @@ update_with_version_check() {
 }
 ```
 
-### 6.2 ジャーナリング
+### 7.2 ジャーナリング
 
 ```bash
 # 変更ジャーナル
@@ -422,9 +421,9 @@ journal_operation() {
 }
 ```
 
-## 7. バックアップとリカバリー
+## 8. バックアップとリカバリー
 
-### 7.1 バックアップ戦略
+### 8.1 バックアップ戦略
 
 ```bash
 #!/bin/bash
@@ -452,7 +451,7 @@ backup_shared_data() {
 }
 ```
 
-### 7.2 リカバリー手順
+### 8.2 リカバリー手順
 
 ```bash
 #!/bin/bash
@@ -479,9 +478,9 @@ restore_from_backup() {
 }
 ```
 
-## 8. パフォーマンス最適化
+## 9. パフォーマンス最適化
 
-### 8.1 キャッシュ戦略
+### 9.1 キャッシュ戦略
 
 ```bash
 # インメモリキャッシュ（Bash連想配列）
@@ -510,7 +509,7 @@ get_task_cached() {
 }
 ```
 
-### 8.2 バッチ処理
+### 9.2 バッチ処理
 
 ```bash
 # 複数タスクの一括読み込み
@@ -530,9 +529,9 @@ batch_read_tasks() {
 }
 ```
 
-## 9. データ保守
+## 10. データ保守
 
-### 9.1 アーカイブ処理
+### 10.1 アーカイブ処理
 
 ```bash
 # 完了タスクのアーカイブ
@@ -556,7 +555,7 @@ archive_completed_tasks() {
 }
 ```
 
-### 9.2 データクリーンアップ
+### 10.2 データクリーンアップ
 
 ```bash
 # 古いログとメトリクスの削除
