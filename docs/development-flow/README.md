@@ -18,8 +18,11 @@
   - [Software Design Document (高レベル設計書)](./design/software_design_document.md) ✅
   - [アーキテクチャ・データフロー図](./design/architecture_dataflow_diagrams.md) ✅
   - [インターフェース仕様書](./design/interface_specification.md) ✅
-  - 詳細設計書 (SDD: Software Design Description)
-  - データベース設計書
+
+- `detailed-design/` - 詳細設計書
+  - [Software Design Description (SDD)](./detailed-design/SDD_software_design_description.md) ✅
+  - [Technical Design Document (TDD)](./detailed-design/TDD_technical_design_document.md) ✅
+  - [データベース詳細設計](./detailed-design/DB_detailed_design.md) ✅
 
 - `test/` - テスト関連ドキュメント
   - テスト計画書
@@ -50,8 +53,9 @@
 - 要求定義フェーズ（[4つのドキュメント](./requirements/)）
 - 要件定義フェーズ（[4つのドキュメント](./requirements/)）
 - 概要設計フェーズ（[3つのドキュメント](./design/)）
+- 詳細設計フェーズ（[3つのドキュメント](./detailed-design/)）
 
 **次のステップ:**
-- 詳細設計フェーズの開始
+- テスト設計フェーズの開始
 
 各フェーズのドキュメントは対応するディレクトリに保存してください。
