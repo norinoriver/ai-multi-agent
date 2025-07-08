@@ -88,9 +88,11 @@ erDiagram
     AGENT ||--o{ STATUS_HISTORY : has
     TASK ||--o{ TASK_HISTORY : has
     TASK ||--o{ TASK_DEPENDENCY : depends_on
-    MESSAGE }o--|| AGENT : from
-    MESSAGE }o--|| AGENT : to
 ```
+
+**注記：** 
+- MESSAGEエンティティは、from_agent と to_agent の両方でAGENTエンティティを参照します
+- 一つのメッセージは送信者（from）と受信者（to）の関係を持ちます
 
 ## 3. ファイルベースデータ構造
 
