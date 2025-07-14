@@ -22,7 +22,7 @@
 - `detailed-design/` - 詳細設計書
   - [Software Design Description (SDD)](./detailed-design/SDD_software_design_description.md) ✅
   - [Technical Design Document (TDD)](./detailed-design/TDD_technical_design_document.md) ✅
-  - [データベース詳細設計](./detailed-design/DB_detailed_design.md) ✅
+  - [ファイルベースデータ設計書](./detailed-design/DB_detailed_design.md) ✅
 
 - `test/` - テスト関連ドキュメント
   - テスト計画書
