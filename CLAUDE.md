@@ -175,74 +175,69 @@ CI/CD Pipeline設定：テスト → ビルド → デプロイ自動化を記�
 ### セキュリティ上の重要事項
 - **絶対パスは記録しない**（個人環境情報の露出防止）
 - **ユーザー名やホームディレクトリパスを含めない**
-- **環境依存の情報は抽象化する**
+- **すべてのパスはプロジェクトルートからの相対パスで記述**
 
-### プロジェクトルートの定義方法
+### プロジェクトルートの定義方法：.projectroot方式
 
-#### 1. マーカーファイルによる識別
+#### 実装手順
+1. **プロジェクトルートに.projectrootファイルを配置**
 ```bash
-# プロジェクトルートに以下のファイルを配置
-touch .project-root
-
-# スクリプト内でのルート検出
-PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || \
-              find . -name ".project-root" -type f -exec dirname {} \; | head -n1)
+# プロジェクトのトップディレクトリで実行
+touch .projectroot
 ```
 
-#### 2. 環境変数による定義（.env.example）
+2. **スクリプト内でのルート検出関数**
 ```bash
-# .env.example（これはGitにコミット）
-PROJECT_NAME=ai-multi-agent
-PROJECT_ROOT=.  # 常に相対パスで記述
-
-# .env（これは.gitignoreに追加）
-# 各開発者がローカルで作成
-PROJECT_ROOT=/path/to/project  # ローカル環境のみ
+# すべてのスクリプトで使用する共通関数
+find_project_root() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -f "$dir/.projectroot" ]]; then
+            echo "$dir"
+            return 0
+        fi
+        dir="$(dirname "$dir")"
+    done
+    echo "Error: .projectroot not found" >&2
+    return 1
+}
 ```
 
-#### 3. 相対パスの基準点明確化
-```bash
-# すべてのパスはプロジェクトルートからの相対パスで記述
-# 例：
-docs/                     # ✓ 良い例
-./docs/                   # ✓ 良い例
-/Users/xxx/project/docs/  # ✗ 悪い例（絶対パス）
-~/project/docs/           # ✗ 悪い例（ユーザー依存）
-```
-
-### 推奨される実装パターン
-
-#### パターン1: Git管理下での自動検出
+3. **使用例**
 ```bash
 #!/bin/bash
-# すべてのスクリプトの冒頭に追加
-
-# Gitリポジトリのルートを自動検出
-cd "$(dirname "$0")"
-PROJECT_ROOT=$(git rev-parse --show-toplevel)
+# スクリプトの冒頭で実行
+PROJECT_ROOT=$(find_project_root) || exit 1
 cd "$PROJECT_ROOT"
 
-# 以降、すべてのパスは$PROJECT_ROOTからの相対パス
+# 以降、すべてのパスは相対パスで記述
 DOCS_DIR="docs/development-flow"
+REQUIREMENTS_DIR="docs/development-flow/requirements"
 ```
 
-#### パターン2: 設定ファイルベース
-```yaml
-# project-config.yml
-project:
-  name: ai-multi-agent
-  structure:
-    docs: ./docs
-    src: ./src
-    tests: ./tests
+### 相対パスの記述ルール
+```bash
+# 良い例：
+docs/                     # ✓ プロジェクトルートからの相対パス
+./docs/                   # ✓ 明示的な相対パス
+
+# 悪い例：
+/Users/xxx/project/docs/  # ✗ 絶対パス（禁止）
+~/project/docs/           # ✗ ユーザー依存パス（禁止）
 ```
 
-### CI/CD環境での考慮事項
+### CI/CD環境での対応
+CI/CD環境でも同じ.projectroot方式を使用します：
 ```yaml
 # .github/workflows/example.yml
-env:
-  PROJECT_ROOT: ${{ github.workspace }}
-  DOCS_PATH: docs/development-flow
+steps:
+  - uses: actions/checkout@v3
+  - name: Setup project root
+    run: |
+      # .projectrootは既にリポジトリに含まれているため、
+      # 追加の設定は不要
+      PROJECT_ROOT=$(find . -name ".projectroot" -type f -exec dirname {} \; | head -n1)
+      echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
 ```
 
 ## 既存ファイルの更新ルール
