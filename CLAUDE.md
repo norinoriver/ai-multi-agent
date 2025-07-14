@@ -1,13 +1,44 @@
 # 開発フロー概要
 以下の開発フローに従い開発を進めて下さい
 
-``` mermaid
+```mermaid
 flowchart TD
-    A[1.要求定義] --> B[2.要件定義]
-    B --> C[3.概要設計]
-    C --> D[4.詳細設計]
-    D --> E[5.テスト設計]
-    E --> F[6.T-WADA style TDD 実装]
+    A[1.要求定義] -.-> review
+    R4 --Yes--> B[2.要件定義]
+    B -.-> review
+    R4 --Yes--> C[3.概要設計]
+    C -.-> review
+    R4 --Yes--> D[4.詳細設計]
+    D -.-> review
+    R4 --Yes--> E[5.テスト設計]
+    E -.-> review
+    R4 --Yes--> F[6.実装]
+    F -.-> tdd
+    T3 --> completion
+    C5 --No--> T1
+    C5 --Yes--> H[まとめてレビュー]
+    H --> I[完了]
+
+    subgraph review["レビューサイクル"]
+        R1[作業実施（AI）] --> R2[AIセルフレビュー]
+        R2 --> R3[人間レビュー]
+        R3 --> R4{承認？}
+        R4 --No--> R1
+    end
+    
+    subgraph tdd["TDDサイクル"]
+        T1[テスト作成（Red）] --> T2[実装（Green）]
+        T2 --> T3[リファクタ]
+        T3 --> T1
+    end
+    
+    subgraph completion["機能単位完成の判断基準"]
+        C1[現在の機能のテストケースがGreen]
+        C2[リファクタリング完了]
+        C3[受入条件1つクリア]
+        C4[lint/typecheckクリア]
+        C1 & C2 & C3 & C4 --> C5{この機能単位完了？}
+    end
 ```
 
 ## 1.要求定義
@@ -46,7 +77,7 @@ flowchart TD
 - Test Data Requirements／Environment Readiness：テストデータ設計、環境整備条件 
 - Traceability Matrix：要件からテストへの対応を明示
 
-6. T‑WADA style TDD 実装
+# 6. T‑WADA style TDD 実装
 テスト設計に従い以下の手順で開発を進めて下さい
 
 （Test‑Driven Development 実装）
@@ -67,15 +98,88 @@ CI/CD Pipeline設定：テスト → ビルド → デプロイ自動化を記�
 
 # 絶対遵守
 - @/ai-multi-agent は動作確認用途のためファイル編集を禁ず
+
 - 回答は日本語
 - 作業毎にcommit して残して
 - 機能毎にブランチを作成して
 - エラーやバグの修正は、全容を把握、整理してから着手
 
 # Claude.md更新
-作業途中で、何度も行うような手順等に関してはClaude.mdに追記をして下さい
+作業途中で、何度も行うような手順等に関しては@Claude.mdに追記をして下さい
 
 # mermaid図作成時の注意点
 - erDiagram: 全エンティティ定義 → リレーション定義の順番で記述
 - 構文エラー発生時は公式ドキュメント参照
 - エラー修正前に全容把握と問題整理を実施
+
+# 出力ディレクトリ構成ルール
+出力ファイルの一貫性と再現性を保つため、以下のルールに従って下さい
+
+## ベースディレクトリ構成
+```
+./docs/
+├── development-flow/           # 開発フロー関連文書
+│   ├── requirements/          # 要求定義・要件定義
+│   │   ├── OCD_{プロジェクト名}_{作成日}.md
+│   │   ├── SRS_{プロジェクト名}_{作成日}.md
+│   │   └── use_cases_{プロジェクト名}_{作成日}.md
+│   ├── design/               # 概要設計
+│   │   ├── software_design_document_{プロジェクト名}_{作成日}.md
+│   │   ├── interface_specification_{プロジェクト名}_{作成日}.md
+│   │   └── data_flow_diagram_{プロジェクト名}_{作成日}.md
+│   ├── detailed-design/      # 詳細設計
+│   │   ├── SDD_{プロジェクト名}_{作成日}.md
+│   │   ├── TDD_{プロジェクト名}_{作成日}.md
+│   │   └── database_design_{プロジェクト名}_{作成日}.md
+│   ├── test-design/          # テスト設計
+│   │   ├── test_plan_{プロジェクト名}_{作成日}.md
+│   │   ├── test_cases_{プロジェクト名}_{作成日}.md
+│   │   └── test_data_{プロジェクト名}_{作成日}.md
+│   └── implementation/       # 実装関連
+│       ├── tdd_log_{プロジェクト名}_{作成日}.md
+│       └── code_review_{プロジェクト名}_{作成日}.md
+└── project-specific/          # プロジェクト固有文書
+    └── {プロジェクト名}/
+        ├── README.md
+        └── project_notes.md
+```
+
+## ファイル命名規則
+### 基本形式
+`{文書種別}_{プロジェクト名}_{作成日}.md`
+
+### プレースホルダー定義
+- `{文書種別}`: 以下の固定値を使用
+  - `OCD`: Operational Concept Description
+  - `SRS`: Software Requirements Specification
+  - `SDD`: Software Design Description
+  - `TDD`: Technical Design Document
+  - `test_plan`: テスト計画書
+  - `test_cases`: テストケース仕様書
+- `{プロジェクト名}`: 英数字・ハイフン・アンダースコアのみ使用
+- `{作成日}`: YYYY-MM-DD形式（例: 2025-07-14）
+
+### 命名例
+- `SRS_ai-multi-agent_2025-07-14.md`
+- `SDD_web-frontend_2025-07-14.md`
+- `test_plan_mobile-app_2025-07-14.md`
+
+## 再現性確保のための注意点
+- 絶対パスではなく相対パスを使用する
+- プロジェクト名は一貫して同じ表記を使用する
+- 日付形式は必ずYYYY-MM-DD形式を使用する
+- 既存ファイルがある場合は上書きせず、日付を更新して新規作成する
+- 各ディレクトリにはREADME.mdを配置し、構成を説明する
+
+# プロジェクト横断での再現性確保
+複数プロジェクトで同じCLAUDE.mdを使用する際の注意点
+
+## 環境設定
+1. 作業開始時にプロジェクト名を明確に定義する
+2. 既存のディレクトリ構成を確認し、ルールに従って調整する
+3. 他のプロジェクトの成果物と混在しないよう、プロジェクト名を接頭辞として使用する
+
+## 品質保証
+- 出力ファイルは必ず指定されたディレクトリに配置する
+- ファイル名は命名規則に厳密に従う
+- 同じ入力から常に同じ出力構造が得られることを確認する
