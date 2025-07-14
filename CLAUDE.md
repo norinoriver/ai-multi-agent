@@ -234,11 +234,13 @@ TODO-005: SE Agentの実装 [failed]
 │   │   └── test_data_{プロジェクト名}_{作成日}.md
 │   └── implementation/       # 実装関連文書（コードではない）
 │       ├── tdd_log_{プロジェクト名}_{作成日}.md
-│       └── code_review_{プロジェクト名}_{作成日}.md
+│       ├── code_review_{プロジェクト名}_{作成日}.md
+│       └── todo_{プロジェクト名}_{作成日}.yml
 └── project-specific/          # プロジェクト固有文書
     └── {プロジェクト名}/
         ├── README.md
-        └── project_notes.md
+        ├── project_notes.md
+        └── todo.yml
 ```
 
 ## ファイル命名規則
@@ -253,6 +255,7 @@ TODO-005: SE Agentの実装 [failed]
   - `TDD`: Technical Design Document
   - `test_plan`: テスト計画書
   - `test_cases`: テストケース仕様書
+  - `todo`: タスク管理・進捗管理
 - `{プロジェクト名}`: 英数字・ハイフン・アンダースコアのみ使用
 - `{作成日}`: YYYY-MM-DD形式（例: 2025-07-14）
 
@@ -260,6 +263,13 @@ TODO-005: SE Agentの実装 [failed]
 - `SRS_ai-multi-agent_2025-07-14.md`
 - `SDD_web-frontend_2025-07-14.md`
 - `test_plan_mobile-app_2025-07-14.md`
+- `todo_ai-multi-agent_2025-07-14.yml`
+
+### 保護対象ファイル
+以下のファイルは削除対象から除外し、アーカイブ運用の対象外とする：
+- `todo.yml` (プロジェクト固有のタスク管理ファイル)
+- `CLAUDE.md` (プロジェクト設定ファイル)
+- `.projectroot` (プロジェクトルート識別ファイル)
 
 ## 再現性確保のための注意点
 - 絶対パスではなく相対パスを使用する
