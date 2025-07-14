@@ -234,13 +234,12 @@ TODO-005: SE Agentの実装 [failed]
 │   │   └── test_data_{プロジェクト名}_{作成日}.md
 │   └── implementation/       # 実装関連文書（コードではない）
 │       ├── tdd_log_{プロジェクト名}_{作成日}.md
-│       ├── code_review_{プロジェクト名}_{作成日}.md
-│       └── todo_{プロジェクト名}_{作成日}.yml
+│       └── code_review_{プロジェクト名}_{作成日}.md
 └── project-specific/          # プロジェクト固有文書
     └── {プロジェクト名}/
         ├── README.md
         ├── project_notes.md
-        └── todo.yml
+        └── todo.yml              # 恒常的なタスク管理ファイル
 ```
 
 ## ファイル命名規則
@@ -263,13 +262,14 @@ TODO-005: SE Agentの実装 [failed]
 - `SRS_ai-multi-agent_2025-07-14.md`
 - `SDD_web-frontend_2025-07-14.md`
 - `test_plan_mobile-app_2025-07-14.md`
-- `todo_ai-multi-agent_2025-07-14.yml`
 
-### 保護対象ファイル
+### 保護対象ファイル（恒常的ファイル）
 以下のファイルは削除対象から除外し、アーカイブ運用の対象外とする：
-- `todo.yml` (プロジェクト固有のタスク管理ファイル)
+- `todo.yml` (プロジェクト固有のタスク管理ファイル - 日付なし固定名)
 - `CLAUDE.md` (プロジェクト設定ファイル)
 - `.projectroot` (プロジェクトルート識別ファイル)
+
+**注意**: todo.ymlは日付を含まない恒常的なファイル名とし、内容で履歴管理を行う
 
 ## 再現性確保のための注意点
 - 絶対パスではなく相対パスを使用する
