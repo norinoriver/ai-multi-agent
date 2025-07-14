@@ -206,105 +206,39 @@ TODO-005: SE Agentの実装 [failed]
 # 出力ディレクトリ構成ルール
 出力ファイルの一貫性と再現性を保つため、以下のルールに従って下さい
 
-## プロジェクト全体のディレクトリ構成
+## ソースコード格納場所
+**重要**: すべての実装コード（Bashスクリプト等）は `src/` ディレクトリに格納する
 
-### ルートディレクトリ構成
-```
-{プロジェクトルート}/
-├── .projectroot              # プロジェクトルート識別ファイル
-├── src/                      # ソースコード（実装）
-│   ├── agents/              # エージェント実装
-│   │   ├── boss_po/         # Boss/PO Agent
-│   │   ├── pm/              # PM Agent
-│   │   ├── se/              # SE Agent
-│   │   └── review/          # Review Agent
-│   ├── lib/                 # 共通ライブラリ
-│   │   ├── common_functions.sh
-│   │   ├── message_queue.sh
-│   │   └── status_manager.sh
-│   ├── config/              # 設定ファイル
-│   └── scripts/             # ユーティリティスクリプト
-├── tests/                   # テストコード
-│   ├── unit/               # ユニットテスト
-│   ├── integration/        # 統合テスト
-│   └── e2e/                # E2Eテスト
-├── docs/                   # ドキュメント（設計書・仕様書）
-│   ├── development-flow/   # 開発フロー関連文書
-│   │   ├── requirements/  # 要求定義・要件定義
-│   │   ├── design/        # 概要設計
-│   │   ├── detailed-design/ # 詳細設計
-│   │   ├── test-design/   # テスト設計
-│   │   └── implementation/ # 実装関連文書
-│   └── project-specific/   # プロジェクト固有文書
-├── worktrees/              # Git worktree管理
-├── tmp/                    # 一時ファイル
-└── data/                   # データファイル
-    ├── tasks/              # タスク管理データ
-    ├── status/             # エージェント状態
-    └── messages/           # メッセージキュー
-```
+- `src/` = 実装コード専用
+- `docs/` = 設計書・仕様書専用
 
-### docs/ ディレクトリ詳細（設計書専用）
+## ベースディレクトリ構成
 ```
-docs/development-flow/
-├── requirements/              # 要求定義・要件定義
-│   ├── OCD_{プロジェクト名}_{作成日}.md
-│   ├── SRS_{プロジェクト名}_{作成日}.md
-│   └── use_cases_{プロジェクト名}_{作成日}.md
-├── design/                   # 概要設計
-│   ├── software_design_document_{プロジェクト名}_{作成日}.md
-│   ├── interface_specification_{プロジェクト名}_{作成日}.md
-│   └── data_flow_diagram_{プロジェクト名}_{作成日}.md
-├── detailed-design/          # 詳細設計
-│   ├── SDD_{プロジェクト名}_{作成日}.md
-│   ├── TDD_{プロジェクト名}_{作成日}.md
-│   └── database_design_{プロジェクト名}_{作成日}.md
-├── test-design/              # テスト設計
-│   ├── test_plan_{プロジェクト名}_{作成日}.md
-│   ├── test_cases_{プロジェクト名}_{作成日}.md
-│   └── test_data_{プロジェクト名}_{作成日}.md
-└── implementation/           # 実装関連文書（コードではない）
-    ├── tdd_log_{プロジェクト名}_{作成日}.md
-    └── code_review_{プロジェクト名}_{作成日}.md
-```
-
-### src/ ディレクトリ詳細（実装コード専用）
-```
-src/
-├── agents/                   # エージェント実装
-│   ├── boss_po/
-│   │   ├── init_agent.sh
-│   │   ├── receive_request.sh
-│   │   ├── analyze_requirement.sh
-│   │   └── lib/
-│   ├── pm/
-│   │   ├── init_agent.sh
-│   │   ├── decompose_task.sh
-│   │   ├── assign_task.sh
-│   │   └── lib/
-│   ├── se/
-│   │   ├── init_agent.sh
-│   │   ├── tdd/
-│   │   ├── git/
-│   │   └── lib/
-│   └── review/
-│       ├── init_agent.sh
-│       ├── tests/
-│       ├── review/
-│       └── lib/
-├── lib/                      # 共通ライブラリ
-│   ├── common_functions.sh   # 共通関数
-│   ├── message_queue.sh      # メッセージキュー操作
-│   ├── status_manager.sh     # ステータス管理
-│   └── file_utils.sh         # ファイル操作ユーティリティ
-├── config/                   # 設定ファイル
-│   ├── agent_config.yml
-│   ├── paths.conf
-│   └── constants.sh
-└── scripts/                  # ユーティリティスクリプト
-    ├── setup.sh
-    ├── cleanup.sh
-    └── monitor.sh
+./docs/
+├── development-flow/           # 開発フロー関連文書
+│   ├── requirements/          # 要求定義・要件定義
+│   │   ├── OCD_{プロジェクト名}_{作成日}.md
+│   │   ├── SRS_{プロジェクト名}_{作成日}.md
+│   │   └── use_cases_{プロジェクト名}_{作成日}.md
+│   ├── design/               # 概要設計
+│   │   ├── software_design_document_{プロジェクト名}_{作成日}.md
+│   │   ├── interface_specification_{プロジェクト名}_{作成日}.md
+│   │   └── data_flow_diagram_{プロジェクト名}_{作成日}.md
+│   ├── detailed-design/      # 詳細設計
+│   │   ├── SDD_{プロジェクト名}_{作成日}.md
+│   │   ├── TDD_{プロジェクト名}_{作成日}.md
+│   │   └── database_design_{プロジェクト名}_{作成日}.md
+│   ├── test-design/          # テスト設計
+│   │   ├── test_plan_{プロジェクト名}_{作成日}.md
+│   │   ├── test_cases_{プロジェクト名}_{作成日}.md
+│   │   └── test_data_{プロジェクト名}_{作成日}.md
+│   └── implementation/       # 実装関連文書（コードではない）
+│       ├── tdd_log_{プロジェクト名}_{作成日}.md
+│       └── code_review_{プロジェクト名}_{作成日}.md
+└── project-specific/          # プロジェクト固有文書
+    └── {プロジェクト名}/
+        ├── README.md
+        └── project_notes.md
 ```
 
 ## ファイル命名規則
