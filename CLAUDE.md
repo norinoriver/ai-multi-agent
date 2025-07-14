@@ -170,6 +170,81 @@ CI/CD Pipeline設定：テスト → ビルド → デプロイ自動化を記�
 - 日付形式は必ずYYYY-MM-DD形式を使用する
 - 各ディレクトリにはREADME.mdを配置し、構成を説明する
 
+## プロジェクトルート情報の安全な管理
+
+### セキュリティ上の重要事項
+- **絶対パスは記録しない**（個人環境情報の露出防止）
+- **ユーザー名やホームディレクトリパスを含めない**
+- **環境依存の情報は抽象化する**
+
+### プロジェクトルートの定義方法
+
+#### 1. マーカーファイルによる識別
+```bash
+# プロジェクトルートに以下のファイルを配置
+touch .project-root
+
+# スクリプト内でのルート検出
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || \
+              find . -name ".project-root" -type f -exec dirname {} \; | head -n1)
+```
+
+#### 2. 環境変数による定義（.env.example）
+```bash
+# .env.example（これはGitにコミット）
+PROJECT_NAME=ai-multi-agent
+PROJECT_ROOT=.  # 常に相対パスで記述
+
+# .env（これは.gitignoreに追加）
+# 各開発者がローカルで作成
+PROJECT_ROOT=/path/to/project  # ローカル環境のみ
+```
+
+#### 3. 相対パスの基準点明確化
+```bash
+# すべてのパスはプロジェクトルートからの相対パスで記述
+# 例：
+docs/                     # ✓ 良い例
+./docs/                   # ✓ 良い例
+/Users/xxx/project/docs/  # ✗ 悪い例（絶対パス）
+~/project/docs/           # ✗ 悪い例（ユーザー依存）
+```
+
+### 推奨される実装パターン
+
+#### パターン1: Git管理下での自動検出
+```bash
+#!/bin/bash
+# すべてのスクリプトの冒頭に追加
+
+# Gitリポジトリのルートを自動検出
+cd "$(dirname "$0")"
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+cd "$PROJECT_ROOT"
+
+# 以降、すべてのパスは$PROJECT_ROOTからの相対パス
+DOCS_DIR="docs/development-flow"
+```
+
+#### パターン2: 設定ファイルベース
+```yaml
+# project-config.yml
+project:
+  name: ai-multi-agent
+  structure:
+    docs: ./docs
+    src: ./src
+    tests: ./tests
+```
+
+### CI/CD環境での考慮事項
+```yaml
+# .github/workflows/example.yml
+env:
+  PROJECT_ROOT: ${{ github.workspace }}
+  DOCS_PATH: docs/development-flow
+```
+
 ## 既存ファイルの更新ルール
 
 ### 基本方針
